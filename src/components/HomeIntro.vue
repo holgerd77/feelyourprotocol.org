@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import WelcomeItem from './WelcomeItem.vue'
+import HomeIntroItem from './HomeIntroItem.vue'
 </script>
 
 <template>
-  <WelcomeItem class="m-10">
+  <HomeIntroItem class="m-10">
     <template #heading>Hello. You have found it!</template>
 
     Here you will find an intro page.
-  </WelcomeItem>
+  </HomeIntroItem>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import Footer from './components/Footer.vue';
+import SiteFooter from './components/SiteFooter.vue'
 </script>
 
 <template>
@@ -18,7 +18,7 @@ import Footer from './components/Footer.vue';
 
   <RouterView class="grid grid-cols-1" />
 
-  <Footer msg="Made with ❤️ and pure dedication" />
+  <SiteFooter msg="Made with ❤️ and pure dedication" />
 </template>
 
 <style scoped></style>
