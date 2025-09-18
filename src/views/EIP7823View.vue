@@ -13,7 +13,9 @@ import EIP7823EVM from '@/components/EIP7823EVM.vue'
     <p class="text-blue-900 font-mono text-xs">The modexp precompile provides upper bounds for the input values.</p>
 
     <p>
-      <EIP7823EVM />
+      <suspense>
+        <EIP7823EVM />
+      </suspense>
     </p>
   </div>
 </template>
