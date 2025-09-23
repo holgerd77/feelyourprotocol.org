@@ -9,22 +9,13 @@ import PrecompileValueInput from './precompiles/PrecompileValueInput.vue'
 
 const validByteInputForm: Ref<boolean> = ref(true)
 
-const lenB: Ref<bigint> = ref(1n)
-const lenE: Ref<bigint> = ref(1n)
-const lenM: Ref<bigint> = ref(1n)
-const valB: Ref<bigint> = ref(2n)
-const valE: Ref<bigint> = ref(2n)
-const valM: Ref<bigint> = ref(2n)
-const hexB: Ref<string> = ref('02')
-const hexE: Ref<string> = ref('02')
-const hexM: Ref<string> = ref('02')
+const vals: Ref<bigint[]> = ref([1n, 1n, 1n, 2n, 2n, 2n])
+const lengthMask: Ref<(bigint | undefined)[]> = ref([32n, 32n, 32n, undefined, undefined])
 
-const input = '0000000000000000000000000000000000000000000000000000000000000001' +
-              '0000000000000000000000000000000000000000000000000000000000000001' +
-              '0000000000000000000000000000000000000000000000000000000000000001' +
-              '020202'
+const byteLengths: Ref<bigint[]> = ref([])
+const hexStrings: Ref<string[]> = ref([])
+const data: Ref<string> = ref('')
 
-const data: Ref<string> = ref(input)
 const gas: Ref<bigint | undefined> = ref(BigInt(0))
 const result: Ref<string> = ref('')
 
@@ -41,16 +32,13 @@ const modexp = getActivePrecompiles(common).get('0000000000000000000000000000000
  * Run the precompile
  */
 async function run() {
-  console.log(data.value)
   const callData = {
     data: hexToBytes(`0x${data.value}`),
     gasLimit,
     common,
     _EVM: evm,
   }
-  console.log(callData)
   const res = await modexp(callData)
-  console.log(res)
   gas.value = res.executionGasUsed
   result.value = bytesToHex(res.returnValue)
 }
@@ -58,7 +46,6 @@ async function run() {
 function byteToValueInput() {
   data.value = preformatByteInputForm(data.value)
   validByteInputForm.value = isValidByteInputForm(data.value)
-  console.log(validByteInputForm.value)
   if (!validByteInputForm.value) {
     return false
   }
@@ -67,21 +54,17 @@ function byteToValueInput() {
     return hexToBigInt(`0x${data.value.substring(start, end)}`)
   }
 
-  lenB.value = from(0, 32 * 2)
-  lenE.value = from(64, 64 + 32 * 2)
-  lenM.value = from(128, 128 + 32 * 2)
+  byteLengths.value[3] = from(0, 32 * 2)
+  byteLengths.value[4] = from(64, 64 + 32 * 2)
+  byteLengths.value[5] = from(128, 128 + 32 * 2)
 
-  const bStart = 192
-  const bEnd = bStart + Number(lenB.value) * 2
-  hexB.value = data.value.substring(bStart, bEnd)
-  valB.value = from(bStart, bEnd)
-  const eEnd = bEnd + Number(lenE.value) * 2
-  hexE.value = data.value.substring(bEnd, eEnd)
-  valE.value = from(bEnd, eEnd)
-  const mEnd = eEnd + Number(lenM.value) * 2
-  hexM.value = data.value.substring(eEnd, mEnd)
-  valM.value = from(eEnd, mEnd)
-
+  let start = 0
+  for (let i=0; i < vals.value.length; i++) {
+    const end = start + Number(byteLengths.value[i]) * 2
+    hexStrings.value[i] = data.value.substring(start, end)
+    vals.value[i] = from(start, end)
+    start = end
+  }
   return true
 }
 
@@ -97,19 +80,19 @@ function valueToByteInput() {
     return bigIntToHex(value).substring(2).padStart(length, '0')
   }
 
-  lenB.value = BigInt(bigIntToBytes(valB.value).byteLength)
-  const lenBStr = p(lenB.value, 32 * 2)
-  hexB.value = p(valB.value, Number(lenB.value) * 2)
+  for (let i=0; i < vals.value.length; i++) {
+    if (lengthMask.value[i] === undefined) {
+      byteLengths.value[i] = BigInt(bigIntToBytes(vals.value[i]).byteLength)
+    } else {
+      byteLengths.value[i] = lengthMask.value[i]!
+    }
+    hexStrings.value[i] = p(vals.value[i], Number(byteLengths.value[i]) * 2)
+  }
 
-  lenE.value = BigInt(bigIntToBytes(valE.value).byteLength)
-  const lenEStr = p(lenE.value, 32 * 2)
-  hexE.value = p(valE.value, Number(lenE.value) * 2)
-
-  lenM.value = BigInt(bigIntToBytes(valM.value).byteLength)
-  const lenMStr = p(lenM.value, 32 * 2)
-  hexM.value = p(valM.value, Number(lenM.value) * 2)
-
-  data.value = lenBStr + lenEStr + lenMStr + hexB.value + hexE.value + hexM.value
+  data.value = p(byteLengths.value[3], 32 * 2) + 
+    p(byteLengths.value[4], 32 * 2) +
+    p(byteLengths.value[5], 32 * 2) +
+    hexStrings.value[3] + hexStrings.value[4] + hexStrings.value[5]
 
   return true
 }
@@ -123,6 +106,7 @@ async function onValueInputFormChange() {
   }
 }
 
+valueToByteInput()
 await run()
 
 </script>
@@ -130,20 +114,20 @@ await run()
 <template>
   <div>
     <p>
-      <textarea rows="6" @input="onByteInputFormChange" v-model="data" 
+      <textarea @input="onByteInputFormChange" rows="6" v-model="data" 
         class="block w-full mb-3 font-mono text-sm text-slate-600 bg-gray-50 border border-blue-400 p-1"></textarea>
     </p>
 
-    <PrecompileValueInput title="B" :len="lenB" :hex="hexB">
-      <input @input="onValueInputFormChange" v-model.number="valB" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
+    <PrecompileValueInput title="B" :len="byteLengths[3]" :hex="hexStrings[3]">
+      <input @input="onValueInputFormChange" v-model.number="vals[3]" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
     </PrecompileValueInput>
 
-    <PrecompileValueInput title="E" :len="lenE" :hex="hexE">
-      <input @input="onValueInputFormChange" v-model.number="valE" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
+    <PrecompileValueInput title="E" :len="byteLengths[4]" :hex="hexStrings[4]">
+      <input @input="onValueInputFormChange" v-model.number="vals[4]" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
     </PrecompileValueInput>
 
-    <PrecompileValueInput title="M" :len="lenM" :hex="hexM">
-      <input @input="onValueInputFormChange" v-model.number="valM" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
+    <PrecompileValueInput title="M" :len="byteLengths[5]" :hex="hexStrings[5]">
+      <input @input="onValueInputFormChange" v-model.number="vals[5]" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
     </PrecompileValueInput>
     
     <p class="mt-5">
