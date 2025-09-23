@@ -4,6 +4,7 @@ import { createEVM, getActivePrecompiles } from '@ethereumjs/evm'
 import { bigIntToBytes, bigIntToHex, bytesToHex, hexToBigInt, hexToBytes } from '@ethereumjs/util'
 import { ref, type Ref } from 'vue'
 import { isValidByteInputForm, preformatByteInputForm } from './lib/inputUtils'
+import PrecompileValueInput from './precompiles/PrecompileValueInput.vue'
 
 
 const validByteInputForm: Ref<boolean> = ref(true)
@@ -133,26 +134,17 @@ await run()
         class="block w-full mb-3 font-mono text-sm text-slate-600 bg-gray-50 border border-blue-400 p-1"></textarea>
     </p>
 
-    <div class="bg-blue-400 bg-clip-border p-2 rounded-md mb-3">
-      <div class="grid grid-cols-2 items-center">
-        <p class="font-bold text-2xl text-blue-900">B</p>
-        <p class="text-right">
-          <input @input="onValueInputFormChange" v-model.number="valB" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
-        </p>
+    <PrecompileValueInput title="B" :len="lenB" :hex="hexB">
+      <input @input="onValueInputFormChange" v-model.number="valB" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
+    </PrecompileValueInput>
 
-        <p class="font-semibold text-xs text-shadow-slate-500">{{ lenB }} Bytes</p>
-        <p class="text-right font-mono text-sm text-slate-700 m-1">
-          {{  hexB }}
-        </p>
-      </div>
-    </div>
+    <PrecompileValueInput title="E" :len="lenE" :hex="hexE">
+      <input @input="onValueInputFormChange" v-model.number="valE" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
+    </PrecompileValueInput>
 
-    <p>
-      E <input @input="onValueInputFormChange" v-model.number="valE" class="bg-gray-50 border border-gray-300"> Length: <span>{{  lenE }}</span>
-    </p>
-    <p>
-      M <input @input="onValueInputFormChange" v-model.number="valM" class="bg-gray-50 border border-gray-300"> Length: <span>{{  lenM }}</span>
-    </p>
+    <PrecompileValueInput title="M" :len="lenM" :hex="hexM">
+      <input @input="onValueInputFormChange" v-model.number="valM" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
+    </PrecompileValueInput>
     
     <p class="mt-5">
       Gas: {{  gas }} | Result: {{  result }}
