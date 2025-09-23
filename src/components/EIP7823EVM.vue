@@ -14,6 +14,9 @@ const lenM: Ref<bigint> = ref(1n)
 const valB: Ref<bigint> = ref(2n)
 const valE: Ref<bigint> = ref(2n)
 const valM: Ref<bigint> = ref(2n)
+const hexB: Ref<string> = ref('02')
+const hexE: Ref<string> = ref('02')
+const hexM: Ref<string> = ref('02')
 
 const input = '0000000000000000000000000000000000000000000000000000000000000001' +
               '0000000000000000000000000000000000000000000000000000000000000001' +
@@ -69,10 +72,13 @@ function byteToValueInput() {
 
   const bStart = 192
   const bEnd = bStart + Number(lenB.value) * 2
+  hexB.value = data.value.substring(bStart, bEnd)
   valB.value = from(bStart, bEnd)
   const eEnd = bEnd + Number(lenE.value) * 2
+  hexE.value = data.value.substring(bEnd, eEnd)
   valE.value = from(bEnd, eEnd)
   const mEnd = eEnd + Number(lenM.value) * 2
+  hexM.value = data.value.substring(eEnd, mEnd)
   valM.value = from(eEnd, mEnd)
 
   return true
@@ -90,21 +96,19 @@ function valueToByteInput() {
     return bigIntToHex(value).substring(2).padStart(length, '0')
   }
 
-  console.log(bigIntToBytes(valB.value))
-  console.log(bigIntToBytes(valB.value).byteLength)
   lenB.value = BigInt(bigIntToBytes(valB.value).byteLength)
   const lenBStr = p(lenB.value, 32 * 2)
-  const valBStr = p(valB.value, Number(lenB.value) * 2)
+  hexB.value = p(valB.value, Number(lenB.value) * 2)
 
   lenE.value = BigInt(bigIntToBytes(valE.value).byteLength)
   const lenEStr = p(lenE.value, 32 * 2)
-  const valEStr = p(valE.value, Number(lenE.value) * 2)
+  hexE.value = p(valE.value, Number(lenE.value) * 2)
 
   lenM.value = BigInt(bigIntToBytes(valM.value).byteLength)
   const lenMStr = p(lenM.value, 32 * 2)
-  const valMStr = p(valM.value, Number(lenM.value) * 2)
+  hexM.value = p(valM.value, Number(lenM.value) * 2)
 
-  data.value = lenBStr + lenEStr + lenMStr + valBStr + valEStr + valMStr
+  data.value = lenBStr + lenEStr + lenMStr + hexB.value + hexE.value + hexM.value
 
   return true
 }
@@ -125,13 +129,24 @@ await run()
 <template>
   <div>
     <p>
-      <span>Input:</span>
       <textarea rows="6" @input="onByteInputFormChange" v-model="data" 
-        class="block w-full bg-gray-50 border border-gray-300"></textarea>
+        class="block w-full mb-3 font-mono text-sm text-slate-600 bg-gray-50 border border-blue-400 p-1"></textarea>
     </p>
-    <p>
-      B <input @input="onValueInputFormChange" v-model.number="valB" class="bg-gray-50 border border-gray-300"> Length: <span>{{  lenB }}</span>
-    </p>
+
+    <div class="bg-blue-400 bg-clip-border p-2 rounded-md mb-3">
+      <div class="grid grid-cols-2 items-center">
+        <p class="font-bold text-2xl text-blue-900">B</p>
+        <p class="text-right">
+          <input @input="onValueInputFormChange" v-model.number="valB" class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1">
+        </p>
+
+        <p class="font-semibold text-xs text-shadow-slate-500">{{ lenB }} Bytes</p>
+        <p class="text-right font-mono text-sm text-slate-700 m-1">
+          {{  hexB }}
+        </p>
+      </div>
+    </div>
+
     <p>
       E <input @input="onValueInputFormChange" v-model.number="valE" class="bg-gray-50 border border-gray-300"> Length: <span>{{  lenE }}</span>
     </p>
