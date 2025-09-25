@@ -33,14 +33,17 @@ jobs:
         run: npm run build
 
       - name: Start app
-        run: npm run dev &
-      
+        run: npm run dev -- --host 0.0.0.0 &
+        # The --host 0.0.0.0 flag for Vite ensures the server is accessible over the CI's network stack.
+
       - name: Wait for server to start
-        run: npx wait-on http://localhost:5173
+        run: npx wait-on http://127.0.0.1:5173
+        # Explicitly use 127.0.0.1 to avoid localhost<->IPv6 mapping issues in CI.
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
-          # Start with default Cypress E2E options
-          start: npm run dev
-          wait-on: http://localhost:5173
+          start: npm run dev -- --host 0.0.0.0
+          wait-on: http://127.0.0.1:5173
+          wait-on-timeout: 120
+          # Use same server start command and ensure wait-on matches the above.
