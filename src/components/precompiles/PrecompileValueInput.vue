@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  defineProps(['title', 'len', 'hex'])
+defineProps(['title', 'len', 'hex'])
 </script>
 
 <template>
@@ -12,7 +12,7 @@
 
       <p class="font-semibold text-xs text-shadow-slate-500">{{ len }} Bytes</p>
       <p class="text-right font-mono text-sm text-slate-700 m-1">
-        {{  hex }}
+        {{ hex }}
       </p>
     </div>
   </div>

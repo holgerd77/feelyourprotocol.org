@@ -4,12 +4,12 @@ import type { Ref } from 'vue'
 /**
  * Checks for Byte input form validity
  * (call only after preformat! (so: strip 0x))
- * 
+ *
  * - No 0x-prefix
  * - Valid hex values
  * - Even length (two chars per byte)
- * 
- * @param str 
+ *
+ * @param str
  * @returns true if valid
  */
 export const isValidByteInputForm = (str: string) => {
@@ -33,8 +33,12 @@ export const toHex = (value: bigint, length: number) => {
   return bigIntToHex(value).substring(2).padStart(length, '0')
 }
 
-export const byteToValueInput = (data: Ref<string, string>, vals: Ref<bigint[], bigint[]>,
-  byteLengths: Ref<bigint[], bigint[]>, hexStrings: Ref<string[], string[]>) => {
+export const byteToValueInput = (
+  data: Ref<string, string>,
+  vals: Ref<bigint[], bigint[]>,
+  byteLengths: Ref<bigint[], bigint[]>,
+  hexStrings: Ref<string[], string[]>,
+) => {
   let start = 0
   for (let i = 0; i < vals.value.length; i++) {
     const end = start + Number(byteLengths.value[i]) * 2
@@ -44,8 +48,12 @@ export const byteToValueInput = (data: Ref<string, string>, vals: Ref<bigint[], 
   }
 }
 
-export const valueToByteInput = (vals: Ref<bigint[], bigint[]>, lengthsMask: Ref<(bigint | undefined)[], (bigint | undefined)[]>,
-  byteLengths: Ref<bigint[], bigint[]>, hexStrings: Ref<string[], string[]>) => {
+export const valueToByteInput = (
+  vals: Ref<bigint[], bigint[]>,
+  lengthsMask: Ref<(bigint | undefined)[], (bigint | undefined)[]>,
+  byteLengths: Ref<bigint[], bigint[]>,
+  hexStrings: Ref<string[], string[]>,
+) => {
   for (let i = 0; i < vals.value.length; i++) {
     if (lengthsMask.value[i] === undefined) {
       byteLengths.value[i] = BigInt(bigIntToBytes(vals.value[i]).byteLength)
