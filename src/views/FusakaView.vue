@@ -7,12 +7,14 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/solid'
   <main>
     <div class="grid grid-cols-1">
       <p class="text-right text-4xl">
-        <a href="https://forkcast.org/upgrade/fusaka" title="Visit Forkcast Overview" target="_blank">
-          <ArrowTopRightOnSquareIcon class="size-7 inline align-baseline text-blue-600" /> 
+        <a
+          href="https://forkcast.org/upgrade/fusaka"
+          title="Visit Forkcast Overview"
+          target="_blank"
+        >
+          <ArrowTopRightOnSquareIcon class="size-7 inline align-baseline text-blue-600" />
         </a>
-        <span class="ml-1">
-          FUSAKA
-        </span>
+        <span class="ml-1"> FUSAKA </span>
       </p>
     </div>
 
