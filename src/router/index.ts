@@ -10,7 +10,7 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/eip-7823-modexp-upper-bounds',
+      path: '/eip-7883-modexp-gas-cost-increase',
       name: 'about',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route

@@ -10,7 +10,7 @@ import SiteFooter from './components/SiteFooter.vue'
         <RouterLink to="/">feelyourprotocol.org</RouterLink>
       </h1>
       <nav class="font-mono text-right">
-        <RouterLink to="/eip-7823-modexp-upper-bounds" class="ml-5">EIP-7823</RouterLink>
+        <RouterLink to="/eip-7883-modexp-gas-cost-increase" class="ml-5">EIP-7883</RouterLink>
         <RouterLink to="/fusaka" class="ml-5">Fusaka</RouterLink>
       </nav>
     </div>
