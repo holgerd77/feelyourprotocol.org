@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EIP7823EVM from '@/components/EIP7823EVM.vue'
+import EIP7823EVM from '@/components/EIP7883EVM.vue'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/solid'
 </script>
 
@@ -9,7 +9,7 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/solid'
       <h3 class="font-bold text-xl text-blue-900">ModExp Gas Cost Increase</h3>
       <h3 class="font-mono text-right text-xl">
         <a href="https://eips.ethereum.org/EIPS/eip-7883" title="Visit EIP Specification" target="_blank">
-          <ArrowTopRightOnSquareIcon class="size-4 inline text-blue-600" /> 
+          <ArrowTopRightOnSquareIcon class="size-4 inline align-baseline text-blue-600" /> 
         </a>
         EIP-7883
       </h3>
