@@ -4,8 +4,8 @@ import EIP7883C from '@/components/eips/EIP7883C.vue'
 
 <template>
   <div class="grid grid-cols-1">
-    <p class="text-right text-3xl">
-      <span class="ml-1">EIP</span>
+    <p class="text-right text-4xl">
+      <span class="ml-1">Precompiles | 0x05</span>
     </p>
   </div>
 

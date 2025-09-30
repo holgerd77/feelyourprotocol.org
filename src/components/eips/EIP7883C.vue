@@ -13,9 +13,10 @@ import {
 } from '../lib/byteFormUtils'
 import PrecompileC from '@/components/precompiles/PrecompileC.vue'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 
 /**
  * Examples
@@ -131,7 +132,20 @@ async function onValueInputFormChange() {
   value2ByteRun()
 }
 
-await onValueInputFormChange()
+async function init() {
+  if ('b' in route.query && 'e' in route.query && 'm' in route.query) {
+    try {
+      vals.value[3] = BigInt(route.query['b']!.toString())
+      vals.value[4] = BigInt(route.query['e']!.toString())
+      vals.value[5] = BigInt(route.query['m']!.toString())
+    } catch {
+      console.log('Invalid parameter call!')
+    }
+  }
+  await value2ByteRun()
+}
+
+await init()
 </script>
 
 <template>
