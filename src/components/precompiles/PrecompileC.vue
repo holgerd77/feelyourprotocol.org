@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/solid'
+import { ArrowTopRightOnSquareIcon, ShareIcon } from '@heroicons/vue/24/solid'
 
-defineProps(['title', 'eip', 'descriptionHTML'])
+defineProps(['title', 'eip', 'descriptionHTML', 'shareURL'])
 </script>
 
 <template>
@@ -17,6 +17,9 @@ defineProps(['title', 'eip', 'descriptionHTML'])
           <ArrowTopRightOnSquareIcon class="size-4 inline align-baseline text-blue-600" />
         </a>
         EIP-{{ eip }}
+        <a href="#" @click.prevent="shareURL" title="Open Shareable URL (with values)" class="ml-5">
+          <ShareIcon class="size-4 inline align-baseline text-blue-600" />
+        </a>
       </h3>
     </div>
 
