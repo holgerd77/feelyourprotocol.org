@@ -13,6 +13,30 @@ import {
 } from '../lib/byteFormUtils'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 
+/**
+ * Examples
+ */
+const example: Ref<string> = ref('')
+interface Examples {
+  [key: string]: [bigint, bigint, bigint]
+}
+const examples: Examples = {
+  'rsa-random': [3n, 5n, 2n],
+}
+
+const selectExample = () => {
+  if (example.value === '') {
+    return
+  }
+  vals.value[3] = examples[example.value][0]
+  vals.value[4] = examples[example.value][1]
+  vals.value[5] = examples[example.value][2]
+  value2ByteRun()
+}
+
+/**
+ * Form values
+ */
 const vals: Ref<bigint[]> = ref([1n, 1n, 1n, 2n, 2n, 2n])
 const lengthsMask: Ref<(bigint | undefined)[]> = ref([32n, 32n, 32n, undefined, undefined])
 
@@ -20,6 +44,9 @@ const byteLengths: Ref<bigint[]> = ref([])
 const hexStrings: Ref<string[]> = ref([])
 const data: Ref<string> = ref('')
 
+/**
+ * Computation results
+ */
 const gas: Ref<bigint | undefined> = ref(BigInt(0))
 const result: Ref<string> = ref('')
 
@@ -47,7 +74,7 @@ async function run() {
   result.value = bytesToHex(res.returnValue)
 }
 
-async function onByteInputFormChange() {
+async function byte2ValueRun() {
   data.value = preformatByteInputForm(data.value)
   if (!isValidByteInputForm(data.value)) {
     return false
@@ -61,7 +88,12 @@ async function onByteInputFormChange() {
   await run()
 }
 
-async function onValueInputFormChange() {
+async function onByteInputFormChange() {
+  example.value = ''
+  await byte2ValueRun()
+}
+
+async function value2ByteRun() {
   valueToByteInput(vals, lengthsMask, byteLengths, hexStrings)
 
   data.value =
@@ -75,11 +107,23 @@ async function onValueInputFormChange() {
   await run()
 }
 
+async function onValueInputFormChange() {
+  example.value = ''
+  value2ByteRun()
+}
+
 await onValueInputFormChange()
 </script>
 
 <template>
   <div>
+    <p class="text-right">
+      <select v-model="example" @change="selectExample">
+        <option disabled selected value="">Examples</option>
+        <option value="rsa-random">RSA Random</option>
+      </select>
+    </p>
+
     <p>
       <textarea
         @input="onByteInputFormChange"
