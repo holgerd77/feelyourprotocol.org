@@ -31,7 +31,7 @@ const selectExample = () => {
   vals.value[3] = examples[example.value][0]
   vals.value[4] = examples[example.value][1]
   vals.value[5] = examples[example.value][2]
-  onValueInputFormChange(false)
+  value2ByteRun()
 }
 
 /**
@@ -74,10 +74,7 @@ async function run() {
   result.value = bytesToHex(res.returnValue)
 }
 
-async function onByteInputFormChange(fromForm = true) {
-  if (fromForm) {
-    example.value = ''
-  }
+async function byte2ValueRun() {
   data.value = preformatByteInputForm(data.value)
   if (!isValidByteInputForm(data.value)) {
     return false
@@ -91,10 +88,12 @@ async function onByteInputFormChange(fromForm = true) {
   await run()
 }
 
-async function onValueInputFormChange(fromForm = true) {
-  if (fromForm) {
-    example.value = ''
-  }
+async function onByteInputFormChange() {
+  example.value = ''
+  await byte2ValueRun()
+}
+
+async function value2ByteRun() {
   valueToByteInput(vals, lengthsMask, byteLengths, hexStrings)
 
   data.value =
@@ -106,6 +105,11 @@ async function onValueInputFormChange(fromForm = true) {
     hexStrings.value[5]
 
   await run()
+}
+
+async function onValueInputFormChange() {
+  example.value = ''
+  value2ByteRun()
 }
 
 await onValueInputFormChange()
