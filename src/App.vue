@@ -15,7 +15,6 @@ watch(
 )
 
 const navigate = () => {
-  console.log(selectedRoute.value)
   router.push(selectedRoute.value)
 }
 </script>

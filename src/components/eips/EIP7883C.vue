@@ -11,7 +11,12 @@ import {
   toVal,
   valueToByteInput,
 } from '../lib/byteFormUtils'
+import PrecompileC from '@/components/precompiles/PrecompileC.vue'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
 
 /**
  * Examples
@@ -35,9 +40,24 @@ const selectExample = () => {
 }
 
 /**
+ * URL Sharing
+ */
+function shareURL() {
+  const routeData = router.resolve({
+    name: 'EIP-7883',
+    query: {
+      b: vals.value[3].toString(),
+      e: vals.value[4].toString(),
+      m: vals.value[5].toString(),
+    },
+  })
+  window.open(routeData.href, '_blank')
+}
+
+/**
  * Form values
  */
-const vals: Ref<bigint[]> = ref([1n, 1n, 1n, 2n, 2n, 2n])
+const vals: Ref<[bigint, bigint, bigint, bigint, bigint, bigint]> = ref([1n, 1n, 1n, 2n, 2n, 2n])
 const lengthsMask: Ref<(bigint | undefined)[]> = ref([32n, 32n, 32n, undefined, undefined])
 
 const byteLengths: Ref<bigint[]> = ref([])
@@ -112,51 +132,71 @@ async function onValueInputFormChange() {
   value2ByteRun()
 }
 
-await onValueInputFormChange()
+async function init() {
+  if ('b' in route.query && 'e' in route.query && 'm' in route.query) {
+    try {
+      vals.value[3] = BigInt(route.query['b']!.toString())
+      vals.value[4] = BigInt(route.query['e']!.toString())
+      vals.value[5] = BigInt(route.query['m']!.toString())
+    } catch {
+      console.log('Invalid parameter call!')
+    }
+  }
+  await value2ByteRun()
+}
+
+await init()
 </script>
 
 <template>
-  <div>
-    <p class="text-right">
-      <select v-model="example" @change="selectExample">
-        <option disabled selected value="">Examples</option>
-        <option value="rsa-random">RSA Random</option>
-      </select>
-    </p>
+  <PrecompileC
+    title="ModExp Gas Cost Increase"
+    eip="7883"
+    descriptionHTML="Gas cost increases for the modexp precompile. There is a lot more to say here, but we do not say it right now."
+    :shareURL="shareURL"
+  >
+    <div>
+      <p class="text-right">
+        <select v-model="example" @change="selectExample">
+          <option disabled selected value="">Examples</option>
+          <option value="rsa-random">RSA Random</option>
+        </select>
+      </p>
 
-    <p>
-      <textarea
-        @input="onByteInputFormChange"
-        rows="6"
-        v-model="data"
-        class="block w-full mb-3 font-mono text-sm text-slate-600 bg-gray-50 border border-blue-400 p-1"
-      ></textarea>
-    </p>
+      <p>
+        <textarea
+          @input="onByteInputFormChange"
+          rows="6"
+          v-model="data"
+          class="block w-full mb-3 font-mono text-sm text-slate-600 bg-gray-50 border border-blue-400 p-1"
+        ></textarea>
+      </p>
 
-    <PrecompileValueInput title="B" :len="byteLengths[3]" :hex="hexStrings[3]">
-      <input
-        @input="onValueInputFormChange"
-        v-model.number="vals[3]"
-        class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
-      />
-    </PrecompileValueInput>
+      <PrecompileValueInput title="B" :len="byteLengths[3]" :hex="hexStrings[3]">
+        <input
+          @input="onValueInputFormChange"
+          v-model.number="vals[3]"
+          class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
+        />
+      </PrecompileValueInput>
 
-    <PrecompileValueInput title="E" :len="byteLengths[4]" :hex="hexStrings[4]">
-      <input
-        @input="onValueInputFormChange"
-        v-model.number="vals[4]"
-        class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
-      />
-    </PrecompileValueInput>
+      <PrecompileValueInput title="E" :len="byteLengths[4]" :hex="hexStrings[4]">
+        <input
+          @input="onValueInputFormChange"
+          v-model.number="vals[4]"
+          class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
+        />
+      </PrecompileValueInput>
 
-    <PrecompileValueInput title="M" :len="byteLengths[5]" :hex="hexStrings[5]">
-      <input
-        @input="onValueInputFormChange"
-        v-model.number="vals[5]"
-        class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
-      />
-    </PrecompileValueInput>
+      <PrecompileValueInput title="M" :len="byteLengths[5]" :hex="hexStrings[5]">
+        <input
+          @input="onValueInputFormChange"
+          v-model.number="vals[5]"
+          class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
+        />
+      </PrecompileValueInput>
 
-    <p class="mt-5">Gas: {{ gas }} | Result: {{ result }}</p>
-  </div>
+      <p class="mt-5">Gas: {{ gas }} | Result: {{ result }}</p>
+    </div>
+  </PrecompileC>
 </template>
