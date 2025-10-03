@@ -166,7 +166,7 @@ await init()
       <p>
         <textarea
           @input="onByteInputFormChange"
-          rows="6"
+          rows="5"
           v-model="data"
           class="block w-full mb-3 font-mono text-sm text-slate-600 bg-gray-50 border border-blue-400 p-1"
         ></textarea>
@@ -176,7 +176,7 @@ await init()
         <input
           @input="onValueInputFormChange"
           v-model.number="vals[3]"
-          class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
+          class="text-right font-mono text-sm col-span-3 text-slate-600 bg-gray-50 border border-gray-300 p-1"
         />
       </PrecompileValueInput>
 
@@ -184,7 +184,7 @@ await init()
         <input
           @input="onValueInputFormChange"
           v-model.number="vals[4]"
-          class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
+          class="text-right font-mono text-sm col-span-3 text-slate-600 bg-gray-50 border border-gray-300 p-1"
         />
       </PrecompileValueInput>
 
@@ -192,7 +192,7 @@ await init()
         <input
           @input="onValueInputFormChange"
           v-model.number="vals[5]"
-          class="text-right font-mono text-lg text-slate-600 bg-gray-50 border border-gray-300 p-1"
+          class="text-right font-mono text-sm col-span-3 text-slate-600 bg-gray-50 border border-gray-300 p-1"
         />
       </PrecompileValueInput>
 
