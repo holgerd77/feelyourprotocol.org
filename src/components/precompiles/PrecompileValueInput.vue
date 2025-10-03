@@ -9,7 +9,9 @@ defineProps(['title', 'len', 'hex'])
       <slot></slot>
 
       <p class="font-semibold col-span-1 text-xs text-shadow-slate-500">{{ len }} Bytes</p>
-      <p class="text-right font-mono col-span-3 text-xs text-slate-700 mt-1 break-words w-full overflow-hidden">
+      <p
+        class="text-right font-mono col-span-3 text-xs text-slate-700 mt-1 break-words w-full overflow-hidden"
+      >
         {{ hex }}
       </p>
     </div>
