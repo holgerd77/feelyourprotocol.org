@@ -157,7 +157,11 @@ await init()
   >
     <div>
       <p class="text-right">
-        <select v-model="example" class="text-blue-900 text-xs border-1 pl-1 pr-1 pt-0.5 pb-0.5 rounded-sm" @change="selectExample">
+        <select
+          v-model="example"
+          class="text-blue-900 text-xs border-1 pl-1 pr-1 pt-0.5 pb-0.5 rounded-sm"
+          @change="selectExample"
+        >
           <option disabled selected value="">Examples</option>
           <option value="rsa-random">RSA Random</option>
         </select>
@@ -199,21 +203,13 @@ await init()
       <div class="grid grid-cols-2 gap-1 mt-2.5">
         <div class="bg-blue-900 rounded-sm p-2.5 text-left">
           <span class="text-xs bg-white p-1 text-blue-900 rounded-xs">Pre-Osaka</span>
-          <p class="text-2xl font-bold text-white mt-2.5">
-            {{ gas }} Gas
-          </p>
-          <p class="text-xs font-bold font-mono text-white mt-1">
-            Result: {{ result }}
-          </p>
+          <p class="text-2xl font-bold text-white mt-2.5">{{ gas }} Gas</p>
+          <p class="text-xs font-bold font-mono text-white mt-1">Result: {{ result }}</p>
         </div>
         <div class="bg-blue-900 rounded-sm p-2.5 text-right">
           <span class="text-xs w-fit bg-white p-1 text-blue-900 rounded-xs">Post-Osaka</span>
-          <p class="text-2xl font-bold text-white mt-2.5">
-            200 Gas
-          </p>
-          <p class="text-xs font-bold font-mono text-white mt-1">
-            Result: 0x00
-          </p>
+          <p class="text-2xl font-bold text-white mt-2.5">200 Gas</p>
+          <p class="text-xs font-bold font-mono text-white mt-1">Result: 0x00</p>
         </div>
       </div>
     </div>
