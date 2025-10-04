@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Common, Hardfork, Mainnet } from '@ethereumjs/common'
-import { createEVM, getActivePrecompiles } from '@ethereumjs/evm'
-import { bytesToHex, hexToBytes } from '@ethereumjs/util'
+import { createEVM, getActivePrecompiles, type ExecResult } from '@ethereumjs/evm'
+import { hexToBytes } from '@ethereumjs/util'
 import { ref, type Ref } from 'vue'
 import {
   byteToValueInput,
@@ -14,6 +14,7 @@ import {
 import PrecompileC from '@/components/precompiles/PrecompileC.vue'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
+import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -67,33 +68,43 @@ const data: Ref<string> = ref('')
 /**
  * Computation results
  */
-const gas: Ref<bigint | undefined> = ref(BigInt(0))
-const result: Ref<string> = ref('')
+const execResultPre: Ref<ExecResult | undefined> = ref()
+const execResultPost: Ref<ExecResult | undefined> = ref()
 
 /**
  * EVM Initialization
  */
-const common = new Common({ chain: Mainnet, hardfork: Hardfork.Prague })
 const gasLimit = BigInt(5000000)
 
-const evm = await createEVM({ common })
-const modexp = getActivePrecompiles(common).get('0000000000000000000000000000000000000005')!
+const commonPre = new Common({ chain: Mainnet, hardfork: Hardfork.Prague })
+const evmPre = await createEVM({ common: commonPre })
+const modexpPre = getActivePrecompiles(commonPre).get('0000000000000000000000000000000000000005')!
+
+const commonPost = new Common({ chain: Mainnet, hardfork: Hardfork.Osaka })
+const evmPost = await createEVM({ common: commonPost })
+const modexpPost = getActivePrecompiles(commonPost).get('0000000000000000000000000000000000000005')!
 
 /**
  * Run the precompile
  */
 async function run() {
-  console.log(`0x${data.value}`)
-  const callData = {
+  // Pre-Osaka run
+  const callDataPre = {
     data: hexToBytes(`0x${data.value}`),
     gasLimit,
-    common,
-    _EVM: evm,
+    common: commonPre,
+    _EVM: evmPre,
   }
-  const res = await modexp(callData)
-  console.log(res)
-  gas.value = res.executionGasUsed
-  result.value = bytesToHex(res.returnValue)
+  execResultPre.value = await modexpPre(callDataPre)
+
+  // Post-Osaka run
+  const callDataPost = {
+    data: hexToBytes(`0x${data.value}`),
+    gasLimit,
+    common: commonPost,
+    _EVM: evmPost,
+  }
+  execResultPost.value = await modexpPost(callDataPost)
 }
 
 async function byte2ValueRun() {
@@ -178,45 +189,31 @@ await init()
         ></textarea>
       </p>
 
-      <PrecompileValueInput title="B" :len="byteLengths[3]" :hex="hexStrings[3]">
-        <input
-          @input="onValueInputFormChange"
-          v-model.number="vals[3]"
-          class="text-right font-mono text-xs col-span-5 bg-blue-50 text-slate-600 rounded-xs p-0.5"
-        />
-      </PrecompileValueInput>
-
-      <PrecompileValueInput title="E" :len="byteLengths[4]" :hex="hexStrings[4]">
-        <input
-          @input="onValueInputFormChange"
-          v-model.number="vals[4]"
-          class="text-right font-mono text-xs col-span-5 bg-blue-50 text-slate-600 rounded-xs p-0.5"
-        />
-      </PrecompileValueInput>
-
-      <PrecompileValueInput title="M" :len="byteLengths[5]" :hex="hexStrings[5]">
-        <input
-          @input="onValueInputFormChange"
-          v-model.number="vals[5]"
-          class="text-right font-mono text-xs col-span-5 bg-blue-50 text-slate-600 rounded-xs p-0.5"
-        />
-      </PrecompileValueInput>
+      <PrecompileValueInput
+        v-model="vals[3]"
+        title="B"
+        :input="onValueInputFormChange"
+        :len="byteLengths[3]"
+        :hex="hexStrings[3]"
+      />
+      <PrecompileValueInput
+        v-model="vals[4]"
+        title="E"
+        :input="onValueInputFormChange"
+        :len="byteLengths[4]"
+        :hex="hexStrings[4]"
+      />
+      <PrecompileValueInput
+        v-model="vals[5]"
+        title="M"
+        :input="onValueInputFormChange"
+        :len="byteLengths[5]"
+        :hex="hexStrings[5]"
+      />
 
       <div class="grid grid-cols-2 gap-1 mt-2.5">
-        <div class="bg-blue-900 rounded-sm p-2.5 text-left">
-          <span class="text-xs bg-white p-1 text-blue-900 rounded-xs">Pre-Osaka</span>
-          <p class="text-2xl font-bold text-white mt-2.5">{{ gas }} Gas</p>
-          <p class="text-xs font-bold font-mono text-white mt-1 break-words w-full overflow-hidden">
-            Result: {{ result }}
-          </p>
-        </div>
-        <div class="bg-blue-900 rounded-sm p-2.5 text-right">
-          <span class="text-xs w-fit bg-white p-1 text-blue-900 rounded-xs">Post-Osaka</span>
-          <p class="text-2xl font-bold text-white mt-2.5">200 Gas</p>
-          <p class="text-xs font-bold font-mono text-white mt-1 break-words w-full overflow-hidden">
-            Result: 0x00
-          </p>
-        </div>
+        <PrecompileResultC v-model="execResultPre" title="Pre-Osaka" :left="true" />
+        <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
       </div>
     </div>
   </PrecompileC>
