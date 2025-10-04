@@ -15,6 +15,8 @@ import PrecompileC from '@/components/precompiles/PrecompileC.vue'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
 import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
+import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
+import PrecompileByteInput from '../precompiles/PrecompileByteInput.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -24,19 +26,25 @@ const route = useRoute()
  */
 const example: Ref<string> = ref('')
 interface Examples {
-  [key: string]: [bigint, bigint, bigint]
+  [key: string]: {
+    title: string
+    values: [bigint, bigint, bigint]
+  }
 }
 const examples: Examples = {
-  'rsa-random': [3n, 5n, 2n],
+  'rsa-random': {
+    title: 'RSA Random',
+    values: [3n, 5n, 2n],
+  },
 }
 
 const selectExample = () => {
   if (example.value === '') {
     return
   }
-  vals.value[3] = examples[example.value][0]
-  vals.value[4] = examples[example.value][1]
-  vals.value[5] = examples[example.value][2]
+  vals.value[3] = examples[example.value].values[0]
+  vals.value[4] = examples[example.value].values[1]
+  vals.value[5] = examples[example.value].values[2]
   value2ByteRun()
 }
 
@@ -170,23 +178,11 @@ await init()
   >
     <div>
       <p class="text-right">
-        <select
-          v-model="example"
-          class="text-blue-900 text-xs border-1 pl-1 pr-1 pt-0.5 pb-0.5 rounded-sm"
-          @change="selectExample"
-        >
-          <option disabled selected value="">Examples</option>
-          <option value="rsa-random">RSA Random</option>
-        </select>
+        <PrecompileExamplesC v-model="example" :examples="examples" :change="selectExample" />
       </p>
 
       <p>
-        <textarea
-          @input="onByteInputFormChange"
-          rows="6"
-          v-model="data"
-          class="block w-full mt-1.5 mb-2 font-mono text-xs rounded-sm text-slate-600 bg-blue-50 p-1"
-        ></textarea>
+        <PrecompileByteInput v-model="data" rows="6" :formChange="onByteInputFormChange" />
       </p>
 
       <PrecompileValueInput
