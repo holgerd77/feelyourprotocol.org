@@ -11,12 +11,12 @@ import {
   toVal,
   valueToByteInput,
 } from '../lib/byteFormUtils'
-import PrecompileC from '@/components/precompiles/PrecompileC.vue'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
 import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
 import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
 import PrecompileByteInput from '../precompiles/PrecompileByteInput.vue'
+import EIPC from './EIPC.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -170,7 +170,7 @@ await init()
 </script>
 
 <template>
-  <PrecompileC
+  <EIPC
     title="ModExp Gas Cost Increase"
     eip="7883"
     descriptionHTML="Gas cost increases for the modexp precompile. There is a lot more to say here, but we do not say it right now."
@@ -212,5 +212,5 @@ await init()
         <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
       </div>
     </div>
-  </PrecompileC>
+  </EIPC>
 </template>
