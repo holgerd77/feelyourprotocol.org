@@ -15,7 +15,7 @@ import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
 import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
 import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
-import PrecompileByteInput from '../precompiles/PrecompileByteInput.vue'
+import PrecompileDataInput from '../precompiles/PrecompileDataInput.vue'
 import EIPC from './EIPC.vue'
 
 const router = useRouter()
@@ -182,7 +182,7 @@ await init()
       </p>
 
       <p>
-        <PrecompileByteInput v-model="data" rows="6" :formChange="onByteInputFormChange" />
+        <PrecompileDataInput v-model="data" rows="6" :formChange="onByteInputFormChange" />
       </p>
 
       <PrecompileValueInput
