@@ -4,12 +4,12 @@ import { createEVM, getActivePrecompiles, type ExecResult } from '@ethereumjs/ev
 import { hexToBytes } from '@ethereumjs/util'
 import { ref, type Ref } from 'vue'
 import {
-  byteToValueInput,
+  dataToValueInput,
   isValidByteInputForm,
   preformatByteInputForm,
+  toBigInt,
   toHex,
-  toVal,
-  valueToByteInput,
+  valueToDataInput,
 } from '../lib/byteFormUtils'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -28,13 +28,13 @@ const example: Ref<string> = ref('')
 interface Examples {
   [key: string]: {
     title: string
-    values: [bigint, bigint, bigint]
+    values: [string, string, string]
   }
 }
 const examples: Examples = {
   'rsa-random': {
     title: 'RSA Random',
-    values: [3n, 5n, 2n],
+    values: ['03', '05', '02'],
   },
 }
 
@@ -42,10 +42,10 @@ const selectExample = () => {
   if (example.value === '') {
     return
   }
-  vals.value[3] = examples[example.value].values[0]
-  vals.value[4] = examples[example.value].values[1]
-  vals.value[5] = examples[example.value].values[2]
-  value2ByteRun()
+  hexVals.value[3] = examples[example.value].values[0]
+  hexVals.value[4] = examples[example.value].values[1]
+  hexVals.value[5] = examples[example.value].values[2]
+  value2DataRun()
 }
 
 /**
@@ -55,9 +55,9 @@ function shareURL() {
   const routeData = router.resolve({
     name: 'EIP-7883',
     query: {
-      b: vals.value[3].toString(),
-      e: vals.value[4].toString(),
-      m: vals.value[5].toString(),
+      b: hexVals.value[3],
+      e: hexVals.value[4],
+      m: hexVals.value[5],
     },
   })
   window.open(routeData.href, '_blank')
@@ -66,12 +66,19 @@ function shareURL() {
 /**
  * Form values
  */
-const vals: Ref<[bigint, bigint, bigint, bigint, bigint, bigint]> = ref([1n, 1n, 1n, 2n, 2n, 2n])
-const lengthsMask: Ref<(bigint | undefined)[]> = ref([32n, 32n, 32n, undefined, undefined])
-
-const byteLengths: Ref<bigint[]> = ref([])
-const hexStrings: Ref<string[]> = ref([])
 const data: Ref<string> = ref('')
+const hexVals: Ref<[string, string, string, string, string, string]> = ref([
+  '01',
+  '01',
+  '01',
+  '02',
+  '02',
+  '02',
+])
+const bigIntVals: Ref<bigint[]> = ref([])
+
+const lengthsMask: Ref<(bigint | undefined)[]> = ref([32n, 32n, 32n, undefined, undefined])
+const byteLengths: Ref<bigint[]> = ref([])
 
 /**
  * Computation results
@@ -115,55 +122,62 @@ async function run() {
   execResultPost.value = await modexpPost(callDataPost)
 }
 
-async function byte2ValueRun() {
+async function data2ValueRun() {
   data.value = preformatByteInputForm(data.value)
   if (!isValidByteInputForm(data.value)) {
     return false
   }
 
-  byteLengths.value[3] = toVal(data, 0, 32 * 2)
-  byteLengths.value[4] = toVal(data, 64, 64 + 32 * 2)
-  byteLengths.value[5] = toVal(data, 128, 128 + 32 * 2)
+  byteLengths.value[3] = toBigInt(data, 0, 32 * 2)
+  byteLengths.value[4] = toBigInt(data, 64, 64 + 32 * 2)
+  byteLengths.value[5] = toBigInt(data, 128, 128 + 32 * 2)
 
-  byteToValueInput(data, vals, byteLengths, hexStrings)
+  dataToValueInput(data, hexVals, bigIntVals, byteLengths)
   await run()
 }
 
-async function onByteInputFormChange() {
+async function onDataInputFormChange() {
   example.value = ''
-  await byte2ValueRun()
+  await data2ValueRun()
 }
 
-async function value2ByteRun() {
-  valueToByteInput(vals, lengthsMask, byteLengths, hexStrings)
+async function value2DataRun() {
+  for (let i = 0; i < hexVals.value.length; i++) {
+    hexVals.value[i] = preformatByteInputForm(hexVals.value[i])
+    if (!isValidByteInputForm(hexVals.value[i])) {
+      return false
+    }
+  }
+
+  valueToDataInput(hexVals, bigIntVals, lengthsMask, byteLengths)
 
   data.value =
     toHex(byteLengths.value[3], 32 * 2) +
     toHex(byteLengths.value[4], 32 * 2) +
     toHex(byteLengths.value[5], 32 * 2) +
-    hexStrings.value[3] +
-    hexStrings.value[4] +
-    hexStrings.value[5]
+    hexVals.value[3] +
+    hexVals.value[4] +
+    hexVals.value[5]
 
   await run()
 }
 
 async function onValueInputFormChange() {
   example.value = ''
-  value2ByteRun()
+  value2DataRun()
 }
 
 async function init() {
   if ('b' in route.query && 'e' in route.query && 'm' in route.query) {
     try {
-      vals.value[3] = BigInt(route.query['b']!.toString())
-      vals.value[4] = BigInt(route.query['e']!.toString())
-      vals.value[5] = BigInt(route.query['m']!.toString())
+      hexVals.value[3] = route.query['b']!.toString()
+      hexVals.value[4] = route.query['e']!.toString()
+      hexVals.value[5] = route.query['m']!.toString()
     } catch {
       console.log('Invalid parameter call!')
     }
   }
-  await value2ByteRun()
+  await value2DataRun()
 }
 
 await init()
@@ -182,29 +196,29 @@ await init()
       </p>
 
       <p>
-        <PrecompileDataInput v-model="data" rows="6" :formChange="onByteInputFormChange" />
+        <PrecompileDataInput v-model="data" rows="6" :formChange="onDataInputFormChange" />
       </p>
 
       <PrecompileValueInput
-        v-model="vals[3]"
+        v-model="hexVals[3]"
         title="B"
         :input="onValueInputFormChange"
         :len="byteLengths[3]"
-        :hex="hexStrings[3]"
+        :bigIntVal="bigIntVals[3]"
       />
       <PrecompileValueInput
-        v-model="vals[4]"
+        v-model="hexVals[4]"
         title="E"
         :input="onValueInputFormChange"
         :len="byteLengths[4]"
-        :hex="hexStrings[4]"
+        :bigIntVal="bigIntVals[4]"
       />
       <PrecompileValueInput
-        v-model="vals[5]"
+        v-model="hexVals[5]"
         title="M"
         :input="onValueInputFormChange"
         :len="byteLengths[5]"
-        :hex="hexStrings[5]"
+        :bigIntVal="bigIntVals[5]"
       />
 
       <div class="grid grid-cols-2 gap-1 mt-2.5">
