@@ -63,3 +63,14 @@ export const valueToDataInput = (
     bigIntVals.value[i] = hexToBigInt(`0x${hexVals.value[i]}`)
   }
 }
+
+/**
+ * Only use up to 99
+ */
+export const countUpwardsHexStr = (num: number) => {
+  let str = ''
+  for (let i = 1; i <= num; i++) {
+    str += i.toString().substring(0, 2).padStart(2, '0')
+  }
+  return str
+}
