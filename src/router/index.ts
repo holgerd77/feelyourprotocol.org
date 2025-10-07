@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import { EIPs } from '@/views/structure'
+import { EIPs, HARDFORKS, TOPICS } from '@/views/structure'
 
 function loadRoutes() {
   const homeRs = [
@@ -12,7 +12,6 @@ function loadRoutes() {
   ]
 
   const eipRs = []
-
   for (const [name, eip] of Object.entries(EIPs)) {
     eipRs.push({
       path: eip.path,
@@ -24,15 +23,25 @@ function loadRoutes() {
     })
   }
 
-  const hardforkRs = [
-    {
-      path: '/fusaka',
-      name: 'fusaka',
-      component: () => import('../views/FusakaView.vue'),
-    },
-  ]
+  const hardforkRs = []
+  for (const [name, hardfork] of Object.entries(HARDFORKS)) {
+    hardforkRs.push({
+      path: hardfork.path,
+      name,
+      component: () => import('../views/hardforks/' + hardfork.title + 'View.vue'),
+    })
+  }
 
-  return [...homeRs, ...eipRs, ...hardforkRs]
+  const topicRs = []
+  for (const [name, topic] of Object.entries(TOPICS)) {
+    topicRs.push({
+      path: topic.path,
+      name,
+      component: () => import('../views/topics/' + topic.title + 'View.vue'),
+    })
+  }
+
+  return [...homeRs, ...eipRs, ...hardforkRs, ...topicRs]
 }
 
 const router = createRouter({

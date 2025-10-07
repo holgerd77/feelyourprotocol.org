@@ -7,14 +7,17 @@ export const EIPs: EIPs = {
   },
 }
 
+// Attention! The title is used for routing!
 export const HARDFORKS: Hardforks = {
   fusaka: {
     title: 'Fusaka',
     path: '/fusaka',
+    url: 'https://forkcast.org/upgrade/fusaka',
     eips: getHardforkEIPs('fusaka'),
   },
 }
 
+// Attention! The title is used for routing!
 export const TOPICS: Topics = {
   precompiles: {
     title: 'Precompiles',
@@ -36,6 +39,7 @@ export interface EIPs {
 export interface Hardfork {
   title: string
   path: string
+  url: string
   eips: number[]
 }
 export interface Hardforks {
