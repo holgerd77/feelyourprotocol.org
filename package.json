@@ -22,8 +22,8 @@
     "format": "prettier --write src/ cypress/e2e/"
   },
   "dependencies": {
-    "@ethereumjs/common": "file:../ethereumjs-monorepo/packages/common/ethereumjs-common-10.0.0.tgz",
-    "@ethereumjs/evm": "file:../ethereumjs-monorepo/packages/evm/ethereumjs-evm-10.0.0.tgz",
+    "@ethereumjs/common": "./ext/ethereumjs-common-10.0.0.tgz",
+    "@ethereumjs/evm": "./ext/ethereumjs-evm-10.0.0.tgz",
     "@ethereumjs/util": "^10.0.0",
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/vite": "^4.1.13",
