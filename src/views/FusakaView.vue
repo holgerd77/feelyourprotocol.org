@@ -6,13 +6,13 @@ import EIP7883C from '@/components/eips/EIP7883C.vue'
 <template>
   <main>
     <div class="grid grid-cols-1 mb-3">
-      <p class="text-right text-4xl">
+      <p class="text-right text-3xl">
         <a
           href="https://forkcast.org/upgrade/fusaka"
           title="Visit Forkcast Overview"
           target="_blank"
         >
-          <ArrowTopRightOnSquareIcon class="size-7 inline align-baseline text-blue-600" />
+          <ArrowTopRightOnSquareIcon class="size-6 inline align-baseline text-blue-600" />
         </a>
         <span class="ml-1"> FUSAKA </span>
       </p>
