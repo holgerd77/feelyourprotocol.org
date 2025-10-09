@@ -10,7 +10,7 @@ defineProps([])
     </h3>
 
     <h3 class="font-mono text-xs text-right">
-      <a href="https://vite.dev/" target="_blank" rel="noopener">Imprint</a>
+      <RouterLink to="/imprint">Imprint</RouterLink>
       <a href="https://github.com/holgerd77/feelyourprotocol.org" target="_blank" rel="noopener" class="ml-3">GitHub</a>
     </h3>
   </footer>
