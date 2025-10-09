@@ -2,6 +2,7 @@
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import SiteFooter from './components/SiteFooter.vue'
 import { ref, watch, type Ref } from 'vue'
+import { EIPs } from './views/structure'
 
 const router = useRouter()
 const route = useRoute()
@@ -25,13 +26,21 @@ const navigate = () => {
       <h1 class="font-mono text-lg">
         <RouterLink to="/">feelyourprotocol.org</RouterLink>
       </h1>
-      <nav class="font-mono text-right">
-        <select v-model="selectedRoute" @change="navigate">
-          <option disabled value="">All EIPs</option>
-          <option value="/eip-7883-modexp-gas-cost-increase">EIP-7883</option>
-        </select>
+      <nav class="font-mono text-sm text-right flex justify-end items-center">
+        <RouterLink to="/precompiles" class="ml-5">Precompiles</RouterLink>
 
         <RouterLink to="/fusaka" class="ml-5">Fusaka</RouterLink>
+
+        <select
+          v-model="selectedRoute"
+          @change="navigate"
+          class="text-xs ml-7 border-1 pl-1 pr-1 pt-0.5 pb-0.5 rounded-sm"
+        >
+          <option disabled value="">All EIPs</option>
+          <option v-for="[id, eip] in Object.entries(EIPs)" :key="id" :value="eip.path">
+            EIP-{{ eip.num }}
+          </option>
+        </select>
       </nav>
     </div>
   </header>
