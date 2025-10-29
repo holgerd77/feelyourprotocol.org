@@ -9,6 +9,6 @@ import DancerView from '../DancerView.vue'
     <suspense>
       <EIP7883C />
     </suspense>
-    <DancerView />
+    <DancerView nameId="fusaka" />
   </HardforkView>
 </template>

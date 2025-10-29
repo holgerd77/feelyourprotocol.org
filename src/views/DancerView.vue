@@ -1,9 +1,23 @@
 <script setup lang="ts">
-defineProps(['nameId'])
+withDefaults(
+  defineProps<{
+    nameId: string
+    hasBorder?: boolean
+  }>(),
+  {
+    hasBorder: true,
+  },
+)
+
+const getImageUrl = (nameId: string) =>
+  new URL(`../assets/imgs/dancers/${nameId}.webp`, import.meta.url).href
 </script>
 
 <template>
-  <div class="border-blue-300 border-2 bg-clip-border p-6 rounded-xl">
-    <img src="../assets/imgs/dancers/fusaka.webp" />
+  <div
+    :class="{ 'border-2': hasBorder ?? true }"
+    class="border-blue-200 bg-clip-border p-6 rounded-xl"
+  >
+    <img :src="getImageUrl(nameId)" />
   </div>
 </template>

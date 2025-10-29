@@ -5,9 +5,7 @@ defineProps(['title', 'input', 'len', 'bigIntVal'])
 </script>
 
 <template>
-  <div
-    class="border-blue-900 border-t-1 bg-blue-300 bg-clip-border pt-1.5 pb-0.5 pl-0.5 pr-0.5 mb-0.5"
-  >
+  <div class="border-blue-900 border-t-1 bg-clip-border pt-1.5 pb-0.5 pl-0.5 pr-0.5 mb-0.5">
     <div class="grid grid-cols-6 items-center">
       <p class="font-bold text-xl col-span-1 text-blue-900">{{ title }}</p>
       <input

@@ -25,7 +25,10 @@ const navigate = () => {
     <div class="grid grid-cols-2 pt-2 pb-2 mb-5">
       <h1 class="font-mono text-lg">
         <RouterLink to="/">
-          <span style="font-family:'ItalianoRegular', Times, serif;" class="text-6xl">feelyourprotocol</span> .org
+          <span style="font-family: 'ItalianoRegular', Times, serif" class="text-6xl"
+            >feelyourprotocol</span
+          >
+          .org
         </RouterLink>
       </h1>
       <nav class="font-mono text-sm text-right flex justify-end items-center">
