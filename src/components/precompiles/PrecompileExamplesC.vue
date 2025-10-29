@@ -17,7 +17,7 @@ defineProps<{
 <template>
   <select
     v-model="example"
-    class="text-blue-900 text-xs border-1 pl-1 pr-1 pt-0.5 pb-0.5 rounded-sm"
+    class="text-blue-900 text-xs border-1 pl-1 pr-1 pt-0.5 pb-0.5 mb-0.5 rounded-sm"
     @change="change"
   >
     <option disabled value="">Examples</option>

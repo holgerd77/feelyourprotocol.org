@@ -230,9 +230,14 @@ await init()
   <EIPC
     title="ModExp Gas Cost Increase"
     eip="7883"
-    descriptionHTML="Gas cost increases for the modexp precompile. There is a lot more to say here, but we do not say it right now."
     :shareURL="shareURL"
   >
+  <template v-slot:description>
+    <b>How are ModExp gas costs changing?</b> This widget let's you enter precompile input values and see how gas 
+    costs behave post-Osaka. Explore values with a length around 32 bytes, get a feel for the new base costs and try
+    real-world examples.
+  </template>
+  <template v-slot:content>
     <div>
       <p class="text-right">
         <PrecompileExamplesC v-model="example" :examples="examples" :change="selectExample" />
@@ -269,5 +274,6 @@ await init()
         <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
       </div>
     </div>
+  </template>
   </EIPC>
 </template>
