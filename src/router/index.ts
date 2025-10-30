@@ -4,6 +4,11 @@ import ImprintView from '@/views/ImprintView.vue'
 import { EIPs, HARDFORKS, TOPICS } from '@/views/structure'
 
 function loadRoutes() {
+  // Use Vite's glob imports so production builds can resolve lazy routes
+  const eipViews = import.meta.glob('../views/eips/*View.vue')
+  const hardforkViews = import.meta.glob('../views/hardforks/*View.vue')
+  const topicViews = import.meta.glob('../views/topics/*View.vue')
+
   const homeRs = [
     {
       path: '/',
@@ -22,10 +27,8 @@ function loadRoutes() {
     eipRs.push({
       path: eip.path,
       name,
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/eips/EIP' + eip.num + 'View.vue'),
+      // Lazy-load via statically analyzable glob map
+      component: eipViews[`../views/eips/EIP${eip.num}View.vue`],
     })
   }
 
@@ -34,7 +37,8 @@ function loadRoutes() {
     hardforkRs.push({
       path: hardfork.path,
       name,
-      component: () => import('../views/hardforks/' + hardfork.title + 'View.vue'),
+      // Lazy-load via statically analyzable glob map
+      component: hardforkViews[`../views/hardforks/${hardfork.title}View.vue`],
     })
   }
 
@@ -43,7 +47,8 @@ function loadRoutes() {
     topicRs.push({
       path: topic.path,
       name,
-      component: () => import('../views/topics/' + topic.title + 'View.vue'),
+      // Lazy-load via statically analyzable glob map
+      component: topicViews[`../views/topics/${topic.title}View.vue`],
     })
   }
 
