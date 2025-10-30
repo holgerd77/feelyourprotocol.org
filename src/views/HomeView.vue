@@ -41,7 +41,7 @@ import { EIPs } from './structure.js'
       <div>
         <div class="border-0 border-blue-200 rounded-xl p-5">
           <span class="text-lg rounded-lg border-1 p-1.5"> Latest </span>
-          <ul class="text-xl text-blue-900 p-1.5 mt-3">
+          <ul id="latest-navi" class="text-xl text-blue-900 p-1.5 mt-3">
             <li>
               <RouterLink :to="EIPs['eip-7883'].path">
                 EIP-7823: ModExp Gas Cost Increase
