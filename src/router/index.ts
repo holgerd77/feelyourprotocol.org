@@ -1,24 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import ImprintView from '@/views/ImprintView.vue'
 import { EIPs, HARDFORKS, TOPICS } from '@/views/structure'
 
 function loadRoutes() {
   // Use Vite's glob imports so production builds can resolve lazy routes
+  // This is important to keep the routes statically analyzable for cypress e2e tests
   const eipViews = import.meta.glob('../views/eips/*View.vue')
   const hardforkViews = import.meta.glob('../views/hardforks/*View.vue')
   const topicViews = import.meta.glob('../views/topics/*View.vue')
+  const baseViews = import.meta.glob('../views/*View.vue')
 
   const homeRs = [
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: baseViews['../views/HomeView.vue'],
     },
     {
       path: '/imprint',
       name: 'imprint',
-      component: ImprintView,
+      component: baseViews['../views/ImprintView.vue'],
     },
   ]
 
