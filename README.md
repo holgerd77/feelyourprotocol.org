@@ -73,4 +73,19 @@ in the EIPs array (`num`).
 6. Add EIP component to `src/views/hardforks/<hardfork>View.vue`
 7. Add EIP component to `src/views/topics/<topic>View.vue`
 
+### Third-party Ethereum Library Specifics
+
+#### EthereumJS
+
+If in-between builds should be included, all necessary packages need to be build with `npm pack`, copied to the `ext` directory
+and referenced in the `package.json` file as follows:
+
+```json
+{
+  "@ethereumjs/common": "./ext/ethereumjs-common-10.0.0.tgz",
+  "@ethereumjs/evm": "./ext/ethereumjs-evm-10.0.0.tgz",
+  "@ethereumjs/util": "^10.0.0"
+}
+```
+
 
