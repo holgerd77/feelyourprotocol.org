@@ -78,7 +78,7 @@ const selectExample = async () => {
   hexVals.value[3] = examples[example.value].values[0]
   hexVals.value[4] = examples[example.value].values[1]
   hexVals.value[5] = examples[example.value].values[2]
-  await value2DataRun()
+  await values2Data()
 }
 
 /**
@@ -162,7 +162,11 @@ async function run() {
   execResultPost.value = await modexpPost(callDataPost)
 }
 
-async function data2ValueRun() {
+/**
+ * The combined data is taken as the "source of truth" and the
+ * individual values are derived from it.
+ */
+async function data2Values() {
   data.value = preformatByteInputForm(data.value)
   if (!isValidByteInputForm(data.value)) {
     return false
@@ -176,12 +180,19 @@ async function data2ValueRun() {
   await run()
 }
 
+/**
+ * The data form values changed.
+ */
 async function onDataInputFormChange() {
   example.value = ''
-  await data2ValueRun()
+  await data2Values()
 }
 
-async function value2DataRun() {
+/**
+ * The individual values are taken as the "source of truth" and the
+ * combined data is derived from them.
+ */
+async function values2Data() {
   for (let i = 0; i < hexVals.value.length; i++) {
     hexVals.value[i] = preformatByteInputForm(hexVals.value[i])
     if (!isValidByteInputForm(hexVals.value[i])) {
@@ -202,18 +213,24 @@ async function value2DataRun() {
   await run()
 }
 
+/**
+ * The (some) individual values form values changed.
+ */
 async function onValueInputFormChange() {
   example.value = ''
-  await value2DataRun()
+  await values2Data()
 }
 
+/**
+ * Initialize the widget either with URL parameters or with a default example.
+ */
 async function init() {
   if ('b' in route.query && 'e' in route.query && 'm' in route.query) {
     try {
       hexVals.value[3] = route.query['b']!.toString()
       hexVals.value[4] = route.query['e']!.toString()
       hexVals.value[5] = route.query['m']!.toString()
-      await value2DataRun()
+      await values2Data()
     } catch {
       console.log('Invalid parameter call!')
     }
@@ -229,9 +246,11 @@ await init()
 <template>
   <EIPC title="ModExp Gas Cost Increase" eip="7883" :shareURL="shareURL">
     <template v-slot:description>
-      <b>How are ModExp gas costs changing?</b> This widget let's you enter precompile input values
-      and see how gas costs behave post-Osaka. Explore values with a length around 32 bytes, get a
-      feel for the new base costs and try real-world examples.
+      <b>How are ModExp gas costs changing with Fusaka?</b> EIP-7883 changes the gas calculation algorithm.
+      Especially interesting to explore are values around 32 bytes. Also take note of the new base costs. 
+      A major use case in smart contracts is to verify RSA signatures, e.g. in the context of airdrops.
+      You can find a realistic RSA value setup in the examples. Also note that this widget also respects
+      the new ModExp value boundaries set with EIP-7823 (also Fusaka).
     </template>
     <template v-slot:content>
       <div>
