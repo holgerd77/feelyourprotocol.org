@@ -5,6 +5,10 @@ import type { Ref } from 'vue'
 
 type BU = bigint | undefined
 
+export type HEX_5 = [string, string, string, string, string]
+export type BIGINT_5 = [bigint, bigint, bigint, bigint, bigint]
+export type BIGINT_UNDEFINED_5 = [BU, BU, BU, BU, BU]
+
 export type HEX_6 = [string, string, string, string, string, string]
 export type BIGINT_6 = [bigint, bigint, bigint, bigint, bigint, bigint]
 export type BIGINT_UNDEFINED_6 = [BU, BU, BU, BU, BU, BU]
@@ -28,20 +32,22 @@ export async function runPrecompile(
 
   const commonPre = new Common({ chain: Mainnet, hardfork: preHF })
   const evmPre = await createEVM({ common: commonPre })
-  const modexpPre = getActivePrecompiles(commonPre).get(precompile.padStart(40, '0'))!
+  const precompilePre = getActivePrecompiles(commonPre).get(precompile.padStart(40, '0'))!
 
   const commonPost = new Common({ chain: Mainnet, hardfork: postHF })
   const evmPost = await createEVM({ common: commonPost })
-  const modexpPost = getActivePrecompiles(commonPost).get(precompile.padStart(40, '0'))!
+  const precompilePost = getActivePrecompiles(commonPost).get(precompile.padStart(40, '0'))!
 
   // Pre-HF run
-  const callDataPre = {
-    data: hexToBytes(`0x${data}`),
-    gasLimit,
-    common: commonPre,
-    _EVM: evmPre,
+  if (precompilePre) {
+    const callDataPre = {
+      data: hexToBytes(`0x${data}`),
+      gasLimit,
+      common: commonPre,
+      _EVM: evmPre,
+    }
+    execResultPre.value = await precompilePre(callDataPre)
   }
-  execResultPre.value = await modexpPre(callDataPre)
 
   // Post-HF run
   const callDataPost = {
@@ -50,5 +56,5 @@ export async function runPrecompile(
     common: commonPost,
     _EVM: evmPost,
   }
-  execResultPost.value = await modexpPost(callDataPost)
+  execResultPost.value = await precompilePost(callDataPost)
 }
