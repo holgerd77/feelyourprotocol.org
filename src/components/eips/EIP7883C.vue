@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Common, Hardfork, Mainnet } from '@ethereumjs/common'
-import { createEVM, getActivePrecompiles, type ExecResult } from '@ethereumjs/evm'
-import { hexToBytes } from '@ethereumjs/util'
+import { Hardfork } from '@ethereumjs/common'
+import { type ExecResult } from '@ethereumjs/evm'
 import { ref, type Ref } from 'vue'
 import {
   countUpwardsHexStr,
@@ -11,13 +10,32 @@ import {
   toBigInt,
   toHex,
   valueToDataInput,
-} from '../lib/byteFormUtils'
+} from '../lib/byteFormUtils.js'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
 import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
 import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
 import PrecompileDataInput from '../precompiles/PrecompileDataInput.vue'
 import EIPC from './EIPC.vue'
+import {
+  runPrecompile,
+  type BIGINT_6,
+  type BIGINT_UNDEFINED_6,
+  type Examples,
+  type HEX_6,
+} from '../lib/precompiles.js'
+
+const data: Ref<string> = ref('')
+const hexVals: Ref<HEX_6> = ref(Array(6).fill('') as HEX_6)
+const bigIntVals: Ref<BIGINT_6> = ref(Array(6).fill(0n) as BIGINT_6)
+
+const lengthsMask: Ref<BIGINT_UNDEFINED_6> = ref([32n, 32n, 32n, undefined, undefined, undefined])
+const byteLengths: Ref<BIGINT_6> = ref(Array(6).fill(0n) as BIGINT_6)
+
+const example: Ref<string> = ref('')
+
+const execResultPre: Ref<ExecResult | undefined> = ref()
+const execResultPost: Ref<ExecResult | undefined> = ref()
 
 const router = useRouter()
 const route = useRoute()
@@ -25,13 +43,6 @@ const route = useRoute()
 /**
  * Examples
  */
-const example: Ref<string> = ref('')
-interface Examples {
-  [key: string]: {
-    title: string
-    values: [string, string, string]
-  }
-}
 const examples: Examples = {
   simple: {
     title: 'Simple',
@@ -71,22 +82,22 @@ const examples: Examples = {
   },
 }
 
+/**
+ * Example/URL helper functions
+ */
 const selectExample = async () => {
   if (example.value === '') {
     return
   }
-  hexVals.value[3] = examples[example.value].values[0]
-  hexVals.value[4] = examples[example.value].values[1]
-  hexVals.value[5] = examples[example.value].values[2]
+  hexVals.value[3] = examples[example.value]!.values[0]
+  hexVals.value[4] = examples[example.value]!.values[1]
+  hexVals.value[5] = examples[example.value]!.values[2]
   await values2Data()
 }
 
-/**
- * URL Sharing
- */
 function shareURL() {
   const routeData = router.resolve({
-    name: 'EIP-7883',
+    name: 'eip-7883',
     query: {
       b: hexVals.value[3],
       e: hexVals.value[4],
@@ -97,69 +108,21 @@ function shareURL() {
 }
 
 /**
- * Form values
- */
-const data: Ref<string> = ref('')
-const hexVals: Ref<[string, string, string, string, string, string]> = ref([
-  '00',
-  '00',
-  '00',
-  '00',
-  '00',
-  '00',
-])
-const bigIntVals: Ref<[bigint, bigint, bigint, bigint, bigint, bigint]> = ref([
-  0n,
-  0n,
-  0n,
-  0n,
-  0n,
-  0n,
-])
-
-const lengthsMask: Ref<(bigint | undefined)[]> = ref([32n, 32n, 32n, undefined, undefined])
-const byteLengths: Ref<bigint[]> = ref([])
-
-/**
- * Computation results
- */
-const execResultPre: Ref<ExecResult | undefined> = ref()
-const execResultPost: Ref<ExecResult | undefined> = ref()
-
-/**
  * EVM Initialization
  */
-const gasLimit = BigInt(5000000)
-
-const commonPre = new Common({ chain: Mainnet, hardfork: Hardfork.Prague })
-const evmPre = await createEVM({ common: commonPre })
-const modexpPre = getActivePrecompiles(commonPre).get('0000000000000000000000000000000000000005')!
-
-const commonPost = new Common({ chain: Mainnet, hardfork: Hardfork.Osaka })
-const evmPost = await createEVM({ common: commonPost })
-const modexpPost = getActivePrecompiles(commonPost).get('0000000000000000000000000000000000000005')!
 
 /**
  * Run the precompile
  */
 async function run() {
-  // Pre-Osaka run
-  const callDataPre = {
-    data: hexToBytes(`0x${data.value}`),
-    gasLimit,
-    common: commonPre,
-    _EVM: evmPre,
-  }
-  execResultPre.value = await modexpPre(callDataPre)
-
-  // Post-Osaka run
-  const callDataPost = {
-    data: hexToBytes(`0x${data.value}`),
-    gasLimit,
-    common: commonPost,
-    _EVM: evmPost,
-  }
-  execResultPost.value = await modexpPost(callDataPost)
+  await runPrecompile(
+    data.value,
+    Hardfork.Prague,
+    Hardfork.Osaka,
+    '05',
+    execResultPre,
+    execResultPost,
+  )
 }
 
 /**
