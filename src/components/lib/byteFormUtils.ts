@@ -20,7 +20,7 @@ export const isValidByteInputForm = (str: string) => {
 
 /**
  * Remove the 0x-prefix if present.
- * 
+ *
  * @param str - The input string
  * @returns The formatted string
  */
@@ -42,7 +42,7 @@ export const toHex = (value: bigint, length: number) => {
 /**
  * Derive the individual values from the combined data
  * being flexible on the number of values.
- * 
+ *
  * @param data - The combined data as the "source of truth"
  * @param hexVals - The individual hex values
  * @param bigIntVals - The individual bigInt values
@@ -63,11 +63,10 @@ export const dataToValueInput = (
   }
 }
 
-
 /**
  * Derive the combined data from the individual values
  * being flexible on the number of values.
- * 
+ *
  * @param hexVals - The individual hex values
  * @param bigIntVals - The individual bigInt values
  * @param lengthsMask - The lengths mask defining certain fixed byte lengths
