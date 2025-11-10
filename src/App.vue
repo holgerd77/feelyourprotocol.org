@@ -22,7 +22,7 @@ const navigate = () => {
 
 <template>
   <header>
-    <div class="grid grid-cols-2 pt-2 pb-2 mb-5">
+    <div class="grid md:grid-cols-2 pt-2 pb-2 mb-5">
       <h1 class="font-mono text-lg">
         <RouterLink to="/">
           <span style="font-family: 'ItalianoRegular', Times, serif" class="text-6xl"
@@ -40,6 +40,7 @@ const navigate = () => {
           v-model="selectedRoute"
           @change="navigate"
           class="text-xs ml-7 border-1 pl-1 pr-1 pt-0.5 pb-0.5 rounded-sm"
+          id="eip-navi"
         >
           <option disabled value="">All EIPs</option>
           <option v-for="[id, eip] in Object.entries(EIPs)" :key="id" :value="eip.path">
