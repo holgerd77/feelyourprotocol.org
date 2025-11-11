@@ -12,7 +12,7 @@ const hardfork: Hardfork = HARDFORKS[route.name]
   <main>
     <div class="grid grid-cols-1 mb-3">
       <p class="text-right text-3xl">
-        <a :href="hardfork['url']" title="Visit Forkcast Overview" target="_blank">
+        <a :href="hardfork['url']" :title="hardfork['url']" target="_blank">
           <ArrowTopRightOnSquareIcon class="size-6 inline align-baseline text-blue-600" />
         </a>
         <span class="ml-3">{{ hardfork.title.toUpperCase() }}</span>

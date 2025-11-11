@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import HeadlineButtonC from '@/components/ui/HeadlineButtonC.vue'
+import TooltipC from '@/components/ui/TooltipC.vue'
 import { useRoute } from 'vue-router'
 import { TOPICS, type Topic } from './lib/structure'
 
@@ -11,11 +13,12 @@ const topic: Topic = TOPICS[route.name]
   <main>
     <div class="grid grid-cols-1 mb-3">
       <p class="text-right text-3xl">
+        <HeadlineButtonC :url="topic.url" />
         <span class="ml-3">{{ topic.title }}</span>
       </p>
     </div>
-
-    <div class="grid md:grid-cols-2">
+    <TooltipC :tooltip="topic.url" />
+    <div class="grid md:grid-cols-2 gap-4">
       <slot></slot>
     </div>
   </main>
