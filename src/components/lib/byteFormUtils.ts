@@ -15,11 +15,11 @@ import type { Ref } from 'vue'
 export const isValidByteInputForm = (str: string) => {
   const errors: string[] = []
   if (str.substring(0, 2) === '0x') {
-    errors.push('Please do not use 0x-prefix')
+    errors.push('Enter without 0x-prefix')
   }
   const validHex = isHexString(`0x${str}`)
   if (!validHex) {
-    errors.push('Hex value is invalid')
+    errors.push('Hex value invalid')
   }
   return errors
 }

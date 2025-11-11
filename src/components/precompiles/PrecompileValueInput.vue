@@ -14,9 +14,9 @@ const validation = computed(() => {
 
 const tooltip = computed(() => {
   if (errors.value.length > 0) {
-    return errors.value.join(', ')
+    return errors.value.join(' | ')
   }
-  return 'Valid input! 👍'
+  return ''
 })
 </script>
 
