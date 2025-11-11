@@ -5,7 +5,7 @@ import { ref, type Ref } from 'vue'
 import {
   dataToValueInput,
   isValidByteInputForm,
-  preformatByteInputForm,
+  padHex,
   valueToDataInput,
 } from '../lib/byteFormUtils.js'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
@@ -96,7 +96,6 @@ async function run() {
  * individual values are derived from it.
  */
 async function data2Values() {
-  data.value = preformatByteInputForm(data.value)
   if (!isValidByteInputForm(data.value)) {
     return false
   }
@@ -118,7 +117,6 @@ async function onDataInputFormChange() {
  */
 async function values2Data() {
   for (let i = 0; i < hexVals.value.length; i++) {
-    hexVals.value[i] = preformatByteInputForm(hexVals.value[i])
     if (!isValidByteInputForm(hexVals.value[i])) {
       return false
     }
@@ -126,7 +124,7 @@ async function values2Data() {
 
   valueToDataInput(hexVals, bigIntVals, lengthsMask, byteLengths)
 
-  data.value = hexVals.value[3] + hexVals.value[4]
+  data.value = padHex(hexVals.value[3]) + padHex(hexVals.value[4])
 
   await run()
 }

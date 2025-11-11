@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Hardfork } from '@ethereumjs/common'
 import { type ExecResult } from '@ethereumjs/evm'
-import { ref, type Ref } from 'vue'
+import { ref, watch, type Ref } from 'vue'
 import {
   countUpwardsHexStr,
   dataToValueInput,
   isValidByteInputForm,
-  preformatByteInputForm,
+  padHex,
   toBigInt,
   toHex,
   valueToDataInput,
@@ -42,6 +42,10 @@ const execResultPost: Ref<ExecResult | undefined> = ref()
 
 const router = useRouter()
 const route = useRoute()
+
+watch(hexVals, () => {
+  console.log('hexVals changed', hexVals.value)
+})
 
 /**
  * Examples
@@ -133,7 +137,6 @@ async function run() {
  * individual values are derived from it.
  */
 async function data2Values() {
-  data.value = preformatByteInputForm(data.value)
   if (!isValidByteInputForm(data.value)) {
     return false
   }
@@ -160,8 +163,7 @@ async function onDataInputFormChange() {
  */
 async function values2Data() {
   for (let i = 0; i < hexVals.value.length; i++) {
-    hexVals.value[i] = preformatByteInputForm(hexVals.value[i])
-    if (!isValidByteInputForm(hexVals.value[i])) {
+    if (isValidByteInputForm(hexVals.value[i]).length > 0) {
       return false
     }
   }
@@ -172,8 +174,9 @@ async function values2Data() {
     toHex(byteLengths.value[3], 32 * 2) +
     toHex(byteLengths.value[4], 32 * 2) +
     toHex(byteLengths.value[5], 32 * 2) +
-    hexVals.value[3] +
-    hexVals.value[4] +
+    padHex(hexVals.value[3]) +
+    padHex(hexVals.value[4]) +
+    padHex(hexVals.value[5]) +
     hexVals.value[5]
 
   await run()
@@ -183,6 +186,7 @@ async function values2Data() {
  * The (some) individual values form values changed.
  */
 async function onValueInputFormChange() {
+  console.log('onValueInputFormChange')
   example.value = ''
   await values2Data()
 }
@@ -233,20 +237,25 @@ await init()
           title="B"
           :input="onValueInputFormChange"
           :len="byteLengths[3]"
+          :expectedLen="lengthsMask[3]"
           :bigIntVal="bigIntVals[3]"
         />
         <PrecompileValueInput
           v-model="hexVals[4]"
           title="E"
+          num="4"
           :input="onValueInputFormChange"
           :len="byteLengths[4]"
+          :expectedLen="lengthsMask[4]"
           :bigIntVal="bigIntVals[4]"
         />
         <PrecompileValueInput
           v-model="hexVals[5]"
           title="M"
+          num="5"
           :input="onValueInputFormChange"
           :len="byteLengths[5]"
+          :expectedLen="lengthsMask[5]"
           :bigIntVal="bigIntVals[5]"
         />
 
