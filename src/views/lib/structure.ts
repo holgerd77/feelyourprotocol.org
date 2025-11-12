@@ -9,7 +9,7 @@ export const EIPs: EIPs = {
   'eip-7951': {
     num: 7951,
     path: '/eip-7951-secp256r1-precompile',
-    title: 'secp256r1 Precompile',
+    title: 'secp256r1 Precompile Support',
     hardforkId: 'fusaka',
     topicId: 'precompiles',
   },

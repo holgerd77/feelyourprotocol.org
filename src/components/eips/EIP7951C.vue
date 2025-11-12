@@ -181,11 +181,11 @@ await init()
 <template>
   <EIPC :title="eip.title" :eip="eip.num" :shareURL="shareURL">
     <template v-slot:description>
-      <b>How are ModExp gas costs changing with Fusaka?</b> EIP-7883 changes the gas calculation
-      algorithm. Especially interesting to explore are values around 32 bytes. Also take note of the
-      new base costs. A major use case in smart contracts is to verify RSA signatures, e.g. in the
-      context of airdrops. You can find a realistic RSA value setup in the examples. Also note that
-      this widget also respects the new ModExp value boundaries set with EIP-7823 (also Fusaka).
+      <b>How does the new curve precompile work?</b> The secp256r1 (also know as P-256) precompile
+      streamlines Ethereum's integration with e.g. Android or Apple devices. Learn how to provide
+      the message hash, signature components and public key coordinates to the precompile located at
+      address <code>0x100</code>. There are valid and invalid example signatures provided. You can
+      also use and test signatures from your own usage contexts of course.
     </template>
     <template v-slot:content>
       <div>
