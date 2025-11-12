@@ -10,10 +10,14 @@ defineProps(['title', 'eip', 'shareURL'])
     <div class="grid grid-cols-2 mb-3">
       <h3 class="font-bold text-xl text-blue-900">{{ title }}</h3>
       <div class="flex justify-end items-baseline">
-        <a href="#" @click.prevent="shareURL" class="mr-1.5">
+        <a href="#" @click.prevent="shareURL" class="share-url-button mr-1.5">
           <ButtonC :icon="ShareIcon" tooltip="Open Shareable URL (with values)" />
         </a>
-        <a :href="'https://eips.ethereum.org/EIPS/eip-' + eip" target="_blank" class="mr-1">
+        <a
+          :href="'https://eips.ethereum.org/EIPS/eip-' + eip"
+          target="_blank"
+          class="visit-eip-button mr-1"
+        >
           <ButtonC :icon="ArrowTopRightOnSquareIcon" tooltip="Visit EIP Specification" />
         </a>
         <h3 class="text-xl text-blue-900 ml-2">EIP-{{ eip }}</h3>
