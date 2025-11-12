@@ -52,14 +52,16 @@ export const padHex = (value: string) => {
 export const dataToValueInput = (
   data: Ref<string, string>,
   hexVals: Ref<string[], string[]>,
-  bigIntVals: Ref<bigint[], bigint[]>,
+  bigIntVals: Ref<(bigint | undefined)[], (bigint | undefined)[]>,
   byteLengths: Ref<bigint[], bigint[]>,
 ) => {
   let start = 0
   for (let i = 0; i < hexVals.value.length; i++) {
     const end = start + Number(byteLengths.value[i]) * 2
     hexVals.value[i] = data.value.substring(start, end)
-    bigIntVals.value[i] = toBigInt(data, start, end)
+    if (bigIntVals.value[i] !== undefined) {
+      bigIntVals.value[i] = toBigInt(data, start, end)
+    }
     start = end
   }
 }
@@ -75,7 +77,7 @@ export const dataToValueInput = (
  */
 export const valueToDataInput = (
   hexVals: Ref<string[], string[]>,
-  bigIntVals: Ref<bigint[], bigint[]>,
+  bigIntVals: Ref<(bigint | undefined)[], (bigint | undefined)[]>,
   lengthsMask: Ref<(bigint | undefined)[], (bigint | undefined)[]>,
   byteLengths: Ref<bigint[], bigint[]>,
 ) => {
@@ -85,7 +87,9 @@ export const valueToDataInput = (
     } else {
       byteLengths.value[i] = lengthsMask.value[i]!
     }
-    bigIntVals.value[i] = hexToBigInt(`0x${hexVals.value[i]}`)
+    if (bigIntVals.value[i] !== undefined) {
+      bigIntVals.value[i] = hexToBigInt(`0x${hexVals.value[i]}`)
+    }
   }
 }
 

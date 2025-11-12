@@ -27,7 +27,7 @@ const eip = EIPs['eip-7951']
 
 const data: Ref<string> = ref('')
 const hexVals: Ref<HEX_5> = ref(Array(5).fill('') as HEX_5)
-const bigIntVals: Ref<BIGINT_5> = ref(Array(5).fill(0n) as BIGINT_5)
+const bigIntVals: Ref<BIGINT_UNDEFINED_5> = ref(Array(5).fill(undefined) as BIGINT_UNDEFINED_5)
 
 const lengthsMask: Ref<BIGINT_UNDEFINED_5> = ref([32n, 32n, 32n, 32n, 32n])
 const byteLengths: Ref<BIGINT_5> = ref(Array(5).fill(0n) as BIGINT_5)
@@ -46,7 +46,13 @@ const route = useRoute()
 const examples: Examples = {
   simple: {
     title: 'Simple',
-    values: ['03', '03', '02', '05', '03'],
+    values: [
+      '0102030405060708091011121314151617181920212223242526272829303132',
+      '0102030405060708091011121314151617181920212223242526272829303132',
+      '0102030405060708091011121314151617181920212223242526272829303132',
+      '0102030405060708091011121314151617181920212223242526272829303132',
+      '0102030405060708091011121314151617181920212223242526272829303132',
+    ],
   },
 }
 
@@ -177,18 +183,13 @@ await init()
         </p>
 
         <PrecompileValueInput
-          v-model="hexVals[3]"
-          title="B"
+          v-for="(title, index) in ['Hash', 'SigR', 'SigS', 'PubX', 'PubY']"
+          :key="index"
+          v-model="hexVals[index]"
+          :title="title"
           :input="onValueInputFormChange"
-          :len="byteLengths[3]"
-          :bigIntVal="bigIntVals[3]"
-        />
-        <PrecompileValueInput
-          v-model="hexVals[4]"
-          title="E"
-          :input="onValueInputFormChange"
-          :len="byteLengths[4]"
-          :bigIntVal="bigIntVals[4]"
+          :len="byteLengths[index]"
+          :bigIntVal="bigIntVals[index]"
         />
 
         <div class="grid grid-cols-2 gap-1 mt-2.5">
