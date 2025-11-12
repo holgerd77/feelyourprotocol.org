@@ -30,6 +30,7 @@ import { EIPs } from '@/views/lib/structure.js'
 const eip = EIPs['eip-7883']
 
 const data: Ref<string> = ref('')
+
 const hexVals: Ref<HEX_6> = ref(Array(6).fill('') as HEX_6)
 const bigIntVals: Ref<BIGINT_UNDEFINED_6> = ref(Array(6).fill(0n) as BIGINT_6)
 
@@ -171,7 +172,7 @@ async function onDataInputFormChange() {
  */
 async function values2Data() {
   for (let i = 0; i < hexVals.value.length; i++) {
-    if (isValidByteInputForm(hexVals.value[i]).length > 0) {
+    if (isValidByteInputForm(hexVals.value[i], lengthsMask.value[i]).length > 0) {
       return false
     }
   }
@@ -223,12 +224,16 @@ await init()
 <template>
   <EIPC :title="eip.title" :eip="eip.num" :shareURL="shareURL">
     <template v-slot:description>
-      <b>How are ModExp gas costs changing with Fusaka?</b> EIP-7883 changes the gas calculation
-      algorithm of the ModExp precompile. Especially interesting to explore are values around 32
-      bytes. Also take note of the new base costs. A major use case in smart contracts is to verify
-      RSA signatures, e.g. in the context of airdrops. You can find a realistic RSA value setup in
-      the examples. Also note that this widget also respects the new ModExp value boundaries set
-      with EIP-7823 (also Fusaka).
+      <p>
+        <b>How are ModExp gas costs changing with Fusaka?</b> EIP-7883 changes the gas calculation
+        algorithm of the ModExp precompile.
+      </p>
+      <p class="mt-4">
+        Especially interesting to explore are values around 32 bytes. Also take note of the new base
+        costs. A major use case in smart contracts is to verify RSA signatures, e.g. in the context
+        of airdrops. You can find a realistic RSA value setup in the examples. The widget also
+        respects the new ModExp value boundaries set with EIP-7823 (also Fusaka).
+      </p>
     </template>
     <template v-slot:content>
       <div>

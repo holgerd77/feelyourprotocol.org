@@ -134,7 +134,7 @@ async function onDataInputFormChange() {
  */
 async function values2Data() {
   for (let i = 0; i < hexVals.value.length; i++) {
-    if (!isValidByteInputForm(hexVals.value[i])) {
+    if (isValidByteInputForm(hexVals.value[i], lengthsMask.value[i]).length > 0) {
       return false
     }
   }
@@ -181,11 +181,16 @@ await init()
 <template>
   <EIPC :title="eip.title" :eip="eip.num" :shareURL="shareURL">
     <template v-slot:description>
-      <b>How does the new curve precompile work?</b> The secp256r1 (also know as P-256) precompile
-      streamlines Ethereum's integration with e.g. Android or Apple devices. Learn how to provide
-      the message hash, signature components and public key coordinates to the precompile located at
-      address <code>0x100</code>. There are valid and invalid example signatures provided. You can
-      also use and test signatures from your own usage contexts of course.
+      <p>
+        <b>How does the new curve precompile work?</b> The secp256r1 (also know as P-256) precompile
+        streamlines Ethereum's integration with e.g. Android or Apple devices.
+      </p>
+      <p class="mt-4">
+        Learn how to provide the message hash, signature components and public key coordinates to
+        the precompile located at address <code>0x100</code>. There are valid and invalid example
+        signatures provided to try out. You can also use and test signatures from your own usage
+        contexts or test (correct) behaviour on cryptographic edge cases.
+      </p>
     </template>
     <template v-slot:content>
       <div>
@@ -204,6 +209,7 @@ await init()
           :title="title"
           :input="onValueInputFormChange"
           :len="byteLengths[index]"
+          :expectedLen="lengthsMask[index]"
           :bigIntVal="bigIntVals[index]"
         />
 

@@ -12,10 +12,13 @@ import type { Ref } from 'vue'
  * @param str
  * @returns empty array if valid, otherwise an array of errors
  */
-export const isValidByteInputForm = (str: string) => {
+export const isValidByteInputForm = (str: string, expectedLen?: bigint) => {
   const errors: string[] = []
   if (str.substring(0, 2) === '0x') {
     errors.push('Enter without 0x-prefix')
+  }
+  if (expectedLen !== undefined && str.length !== Number(expectedLen) * 2) {
+    errors.push(`${Number(expectedLen)} bytes expected (${str.length / 2} bytes provided)`)
   }
   const validHex = isHexString(`0x${str}`)
   if (!validHex) {
