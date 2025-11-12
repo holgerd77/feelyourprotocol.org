@@ -176,8 +176,7 @@ async function values2Data() {
     toHex(byteLengths.value[5], 32 * 2) +
     padHex(hexVals.value[3]) +
     padHex(hexVals.value[4]) +
-    padHex(hexVals.value[5]) +
-    hexVals.value[5]
+    padHex(hexVals.value[5])
 
   await run()
 }

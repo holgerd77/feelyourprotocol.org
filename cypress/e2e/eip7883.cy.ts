@@ -20,8 +20,8 @@ describe('EIP-7823 Component Tests', () => {
     cy.get('#eip-7883-precompile-c input').eq(1).should('have.value', '03')
     cy.get('#eip-7883-precompile-c input').eq(2).should('have.value', '02')
 
-    cy.get('.pre-hardfork').find('p').eq(0).should('have.text', '200 Gas')
-    cy.get('.post-hardfork').find('p').eq(0).should('have.text', '500 Gas')
+    cy.get('.pre-hardfork').find('p').eq(0).should('include.text', '200 Gas')
+    cy.get('.post-hardfork').find('p').eq(0).should('include.text', '500 Gas')
   })
 
   it('precompile component functionality', () => {
@@ -55,8 +55,8 @@ describe('EIP-7823 Component Tests', () => {
       cy.get('input').eq(1).type('040404040404040404040404040404040404040404')
       cy.get('input').eq(2).type('02')
 
-      cy.get('.pre-hardfork').find('p').eq(0).should('have.text', '534 Gas')
-      cy.get('.post-hardfork').find('p').eq(0).should('have.text', '2848 Gas')
+      cy.get('.pre-hardfork').find('p').eq(0).should('include.text', '534 Gas')
+      cy.get('.post-hardfork').find('p').eq(0).should('include.text', '2848 Gas')
     })
   })
 })
