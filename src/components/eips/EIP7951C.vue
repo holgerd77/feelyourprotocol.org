@@ -2,18 +2,14 @@
 import { Hardfork } from '@ethereumjs/common'
 import { type ExecResult } from '@ethereumjs/evm'
 import { ref, type Ref } from 'vue'
-import {
-  dataToValueInput,
-  isValidByteInputForm,
-  padHex,
-  valueToDataInput,
-} from '../lib/byteFormUtils.js'
+import { dataToValueInput, isValidByteInputForm, valueToDataInput } from '../lib/byteFormUtils.js'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
 import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
 import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
 import PrecompileDataInput from '../precompiles/PrecompileDataInput.vue'
 import EIPC from './EIPC.vue'
+import PoweredByC from './PoweredByC.vue'
 import {
   runPrecompile,
   type BIGINT_5,
@@ -37,6 +33,17 @@ const example: Ref<string> = ref('')
 const execResultPre: Ref<ExecResult | undefined> = ref()
 const execResultPost: Ref<ExecResult | undefined> = ref()
 
+const poweredBy = ref([
+  {
+    name: 'Noble Curves',
+    href: 'https://github.com/paulmillr/noble-curves',
+  },
+  {
+    name: 'EthereumJS',
+    href: 'https://github.com/ethereumjs/ethereumjs-monorepo',
+  },
+])
+
 const router = useRouter()
 const route = useRoute()
 
@@ -47,11 +54,11 @@ const examples: Examples = {
   simple: {
     title: 'Simple',
     values: [
-      '0102030405060708091011121314151617181920212223242526272829303132',
-      '0102030405060708091011121314151617181920212223242526272829303132',
-      '0102030405060708091011121314151617181920212223242526272829303132',
-      '0102030405060708091011121314151617181920212223242526272829303132',
-      '0102030405060708091011121314151617181920212223242526272829303132',
+      '5f8d3c21a6b789d43ff928e7b0a94cde7312b7d1ae46c028af651fce0a12133d',
+      '60a457979d2572f0a6845d707eeb50a7be32b258157665f355049b3274adfe5b',
+      '4cfb150c8a6b225388db344f7f639023a6ac4cceea51af1f5af30d09b5c940d7',
+      'a6f8ebd5a7f1403285506a48cf4f6f58bd9ef9a2e17dbd951ced4309867e4c35',
+      '662cb2e7b8d1e40cef0482e7ea6dda27a52a5582a846616c87368b9bd6d192ac',
     ],
   },
 }
@@ -73,7 +80,11 @@ function shareURL() {
   const routeData = router.resolve({
     name: 'eip-7951',
     query: {
-      b: hexVals.value[3],
+      hash: hexVals.value[0],
+      sigr: hexVals.value[1],
+      sigs: hexVals.value[2],
+      pubx: hexVals.value[3],
+      puby: hexVals.value[4],
     },
   })
   window.open(routeData.href, '_blank')
@@ -130,7 +141,7 @@ async function values2Data() {
 
   valueToDataInput(hexVals, bigIntVals, lengthsMask, byteLengths)
 
-  data.value = padHex(hexVals.value[3]) + padHex(hexVals.value[4])
+  data.value = hexVals.value.join('')
 
   await run()
 }
@@ -149,7 +160,11 @@ async function onValueInputFormChange() {
 async function init() {
   if ('b' in route.query && 'e' in route.query && 'm' in route.query) {
     try {
-      hexVals.value[3] = route.query['b']!.toString()
+      hexVals.value[0] = route.query['hash']!.toString()
+      hexVals.value[1] = route.query['sigr']!.toString()
+      hexVals.value[2] = route.query['sigs']!.toString()
+      hexVals.value[3] = route.query['pubx']!.toString()
+      hexVals.value[4] = route.query['puby']!.toString()
       await values2Data()
     } catch {
       console.log('Invalid parameter call!')
@@ -196,6 +211,7 @@ await init()
           <PrecompileResultC v-model="execResultPre" title="Pre-Osaka" :left="true" />
           <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
         </div>
+        <PoweredByC :poweredBy="poweredBy" />
       </div>
     </template>
   </EIPC>

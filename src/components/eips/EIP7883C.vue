@@ -17,6 +17,7 @@ import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
 import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
 import PrecompileDataInput from '../precompiles/PrecompileDataInput.vue'
 import EIPC from './EIPC.vue'
+import PoweredByC from './PoweredByC.vue'
 import {
   runPrecompile,
   type BIGINT_6,
@@ -39,6 +40,13 @@ const example: Ref<string> = ref('')
 
 const execResultPre: Ref<ExecResult | undefined> = ref()
 const execResultPost: Ref<ExecResult | undefined> = ref()
+
+const poweredBy = ref([
+  {
+    name: 'EthereumJS',
+    href: 'https://github.com/ethereumjs/ethereumjs-monorepo',
+  },
+])
 
 const router = useRouter()
 const route = useRoute()
@@ -262,6 +270,7 @@ await init()
           <PrecompileResultC v-model="execResultPre" title="Pre-Osaka" :left="true" />
           <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
         </div>
+        <PoweredByC :poweredBy="poweredBy" />
       </div>
     </template>
   </EIPC>
