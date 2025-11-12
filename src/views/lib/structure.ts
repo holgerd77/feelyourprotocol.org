@@ -30,6 +30,7 @@ export const TOPICS: Topics = {
   precompiles: {
     title: 'Precompiles',
     path: '/precompiles',
+    url: 'https://rareskills.io/post/solidity-precompiles',
     eips: getTopicEIPs('precompiles'),
   },
 }
@@ -58,6 +59,7 @@ export interface Hardforks {
 export interface Topic {
   title: string
   path: string
+  url: string
   eips: number[]
 }
 export interface Topics {

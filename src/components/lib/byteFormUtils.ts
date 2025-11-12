@@ -10,25 +10,18 @@ import type { Ref } from 'vue'
  * - Even length (two chars per byte)
  *
  * @param str
- * @returns true if valid
+ * @returns empty array if valid, otherwise an array of errors
  */
 export const isValidByteInputForm = (str: string) => {
-  const validHex = isHexString(`0x${str}`)
-  const evenLength = str.length % 2 === 0
-  return validHex && evenLength
-}
-
-/**
- * Remove the 0x-prefix if present.
- *
- * @param str - The input string
- * @returns The formatted string
- */
-export const preformatByteInputForm = (str: string) => {
+  const errors: string[] = []
   if (str.substring(0, 2) === '0x') {
-    str = str.substring(2)
+    errors.push('Enter without 0x-prefix')
   }
-  return str
+  const validHex = isHexString(`0x${str}`)
+  if (!validHex) {
+    errors.push('Hex value invalid')
+  }
+  return errors
 }
 
 export const toBigInt = (data: Ref<string, string>, start: number, end: number) => {
@@ -37,6 +30,14 @@ export const toBigInt = (data: Ref<string, string>, start: number, end: number) 
 
 export const toHex = (value: bigint, length: number) => {
   return bigIntToHex(value).substring(2).padStart(length, '0')
+}
+
+export const padHex = (value: string) => {
+  const evenLength = value.length % 2 === 0
+  if (!evenLength) {
+    return `0${value}`
+  }
+  return value
 }
 
 /**

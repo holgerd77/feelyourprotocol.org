@@ -1,7 +1,7 @@
 <script setup lang="ts">
 withDefaults(
   defineProps<{
-    nameId: string
+    nameId?: string
     hasBorder?: boolean
   }>(),
   {
@@ -18,6 +18,7 @@ const getImageUrl = (nameId: string) =>
     :class="{ 'border-2': hasBorder ?? true }"
     class="border-blue-200 bg-clip-border p-6 rounded-xl"
   >
-    <img :src="getImageUrl(nameId)" />
+    <img v-if="nameId" :src="getImageUrl(nameId)" />
+    <div v-else class="text-center p-6 mt-20 text-blue-900 text-2xl font-bold">Dancer missing.</div>
   </div>
 </template>
