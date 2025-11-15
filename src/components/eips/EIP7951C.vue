@@ -51,14 +51,54 @@ const route = useRoute()
  * Examples
  */
 const examples: Examples = {
-  simple: {
-    title: 'Simple',
+  valid: {
+    title: 'Valid ("Hello Fusaka!")',
     values: [
-      '5f8d3c21a6b789d43ff928e7b0a94cde7312b7d1ae46c028af651fce0a12133d',
-      '60a457979d2572f0a6845d707eeb50a7be32b258157665f355049b3274adfe5b',
-      '4cfb150c8a6b225388db344f7f639023a6ac4cceea51af1f5af30d09b5c940d7',
-      'a6f8ebd5a7f1403285506a48cf4f6f58bd9ef9a2e17dbd951ced4309867e4c35',
-      '662cb2e7b8d1e40cef0482e7ea6dda27a52a5582a846616c87368b9bd6d192ac',
+      '4dfb1eae8ed41e188b8a44a1109d982d01fc24bb85a933e6283e8838e46942fd',
+      'eb3dc5ce2902f162745057efb7a3308eba992c0d843623603516845ffccd3f10',
+      '3b91fedfb22f40063245c621036a040c159f02ae02e6d450ff9b53235e9232c4',
+      'bfa6d0a419b5bc625939cccb8db65a16f7c30c697928660e9da53eda031e80fa',
+      'db5998a893f9b8971a3892aecd132c0eca1bc9622e542f428d8129222f26bdc5',
+    ],
+  },
+  'invalid-sig-r': {
+    title: 'Invalid ("Hello Fusaka!"), modified sigR value',
+    values: [
+      '4dfb1eae8ed41e188b8a44a1109d982d01fc24bb85a933e6283e8838e46942fd',
+      'ee3dc5ce2902f162745057efb7a3308eba992c0d843623603516845ffccd3f10',
+      '3b91fedfb22f40063245c621036a040c159f02ae02e6d450ff9b53235e9232c4',
+      'bfa6d0a419b5bc625939cccb8db65a16f7c30c697928660e9da53eda031e80fa',
+      'db5998a893f9b8971a3892aecd132c0eca1bc9622e542f428d8129222f26bdc5',
+    ],
+  },
+  'invalid-sig-0': {
+    title: 'Invalid ("Hello Fusaka!"), sigR and sigS values 0',
+    values: [
+      '4dfb1eae8ed41e188b8a44a1109d982d01fc24bb85a933e6283e8838e46942fd',
+      '0000000000000000000000000000000000000000000000000000000000000000',
+      '0000000000000000000000000000000000000000000000000000000000000000',
+      'bfa6d0a419b5bc625939cccb8db65a16f7c30c697928660e9da53eda031e80fa',
+      'db5998a893f9b8971a3892aecd132c0eca1bc9622e542f428d8129222f26bdc5',
+    ],
+  },
+  'valid-wycheproof-special-case-hash': {
+    title: 'Valid (Wycheproof), special case hash',
+    values: [
+      '00000000690ed426ccf17803ebe2bd0884bcd58a1bb5e7477ead3645f356e7a9',
+      '16aea964a2f6506d6f78c81c91fc7e8bded7d397738448de1e19a0ec580bf266',
+      '252cd762130c6667cfe8b7bc47d27d78391e8e80c578d1cd38c3ff033be928e9',
+      '2927b10512bae3eddcfe467828128bad2903269919f7086069c8c4df6c732838',
+      'c7787964eaac00e5921fb1498a60f4606766b3d9685001558d1a974e7341513e',
+    ],
+  },
+  'invalid-wycheproof-r-too-large': {
+    title: 'Invalid (Wycheproof), r value too large',
+    values: [
+      '532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25',
+      'ffffffff00000001000000000000000000000000fffffffffffffffffffffffc',
+      'ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc63254e',
+      'd705d16f80987e2d9b1a6957d29ce22febf7d10fa515153182415c8361baaca4',
+      'b1fc105ee5ce80d514ec1238beae2037a6f83625593620d460819e8682160926',
     ],
   },
 }
@@ -170,7 +210,7 @@ async function init() {
       console.log('Invalid parameter call!')
     }
   } else {
-    example.value = 'simple'
+    example.value = 'valid'
     await selectExample()
   }
 }
@@ -182,14 +222,37 @@ await init()
   <EIPC :title="eip.title" :eip="eip.num" :shareURL="shareURL">
     <template v-slot:description>
       <p>
-        <b>How does the new curve precompile work?</b> The secp256r1 (also know as P-256) precompile
-        streamlines Ethereum's integration with e.g. Android or Apple devices.
+        <b>How can I interact with the new curve precompile?</b>
+        The
+        <a href="https://www.nervos.org/knowledge-base/what_is_secp256r1" target="_blank"
+          >secp256r1</a
+        >
+        (also know as P-256) precompile improves Ethereum's UX by allowing efficient
+        in-contract-signature verification (e.g. for multisig wallets) from
+        <a href="https://developer.apple.com/documentation/cryptokit/p256" target="_blank">Apple</a>
+        and
+        <a href="https://developer.android.com/privacy-and-security/keystore" target="_blank"
+          >Android</a
+        >
+        devices as well as
+        <a href="https://webauthn.io/" target="_blank">FIDO2/WebAuthn</a> supporting browsers.
       </p>
       <p class="mt-4">
-        Learn how to provide the message hash, signature components and public key coordinates to
-        the precompile located at address <code>0x100</code>. There are valid and invalid example
-        signatures provided to try out. You can also use and test signatures from your own usage
-        contexts or test (correct) behaviour on cryptographic edge cases.
+        The interface below lets you explore how to directly interact with the precompile (at
+        address <code>0x100</code>). You can use libraries like
+        <a
+          href="https://github.com/paulmillr/noble-curves?tab=readme-ov-file#secp256k1-p256-p384-p521-ed25519-ed448-brainpool"
+          target="_blank"
+          >Noble Curves</a
+        >
+        to generate a valid signature to test - see
+        <a
+          href="https://github.com/ethereumjs/ethereumjs-monorepo/tree/master/packages/evm#eip-7951-precompile-for-secp256r1-curve-support-osaka"
+          target="_blank"
+          >here</a
+        >
+        for example code - or use one of the examples provided. The precompile will return
+        <code>0x01</code> (as 32-bytes) if the signature is valid.
       </p>
     </template>
     <template v-slot:content>

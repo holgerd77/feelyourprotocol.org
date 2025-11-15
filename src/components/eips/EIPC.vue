@@ -6,7 +6,10 @@ defineProps(['title', 'eip', 'shareURL'])
 </script>
 
 <template>
-  <div :id="'eip-' + eip + '-precompile-c'" class="bg-blue-200 bg-clip-border p-4 rounded-xl">
+  <div
+    :id="'eip-' + eip + '-precompile-c'"
+    class="eip-precompile-c bg-blue-200 bg-clip-border p-4 rounded-xl"
+  >
     <div class="grid grid-cols-2 mb-3">
       <h3 class="font-bold text-xl text-blue-900">{{ title }}</h3>
       <div class="flex justify-end items-baseline">
