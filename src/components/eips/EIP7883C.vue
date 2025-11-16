@@ -31,17 +31,10 @@ const eip = EIPs['eip-7883']
 
 const data: Ref<string> = ref('')
 
-const hexVals: Ref<HEX_6> = ref(Array(6).fill('') as HEX_6)
+const hexVals: Ref<HEX_6> = ref(Array(6).fill('00'.repeat(32)) as HEX_6)
 const bigIntVals: Ref<BIGINT_UNDEFINED_6> = ref(Array(6).fill(0n) as BIGINT_6)
 
-const lengthsMask: Ref<BIGINT_UNDEFINED_6> = ref([
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-])
+const lengthsMask: Ref<BIGINT_UNDEFINED_6> = ref([32n, 32n, 32n, undefined, undefined, undefined])
 const byteLengths: Ref<BIGINT_6> = ref(Array(6).fill(0n) as BIGINT_6)
 
 const example: Ref<string> = ref('')
