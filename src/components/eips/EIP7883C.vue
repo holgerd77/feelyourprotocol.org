@@ -17,6 +17,7 @@ import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
 import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
 import PrecompileDataInput from '../precompiles/PrecompileDataInput.vue'
 import EIPC from './EIPC.vue'
+import PoweredByC from './PoweredByC.vue'
 import {
   runPrecompile,
   type BIGINT_6,
@@ -29,8 +30,9 @@ import { EIPs } from '@/views/lib/structure.js'
 const eip = EIPs['eip-7883']
 
 const data: Ref<string> = ref('')
-const hexVals: Ref<HEX_6> = ref(Array(6).fill('') as HEX_6)
-const bigIntVals: Ref<BIGINT_6> = ref(Array(6).fill(0n) as BIGINT_6)
+
+const hexVals: Ref<HEX_6> = ref(Array(6).fill('00'.repeat(32)) as HEX_6)
+const bigIntVals: Ref<BIGINT_UNDEFINED_6> = ref(Array(6).fill(0n) as BIGINT_6)
 
 const lengthsMask: Ref<BIGINT_UNDEFINED_6> = ref([32n, 32n, 32n, undefined, undefined, undefined])
 const byteLengths: Ref<BIGINT_6> = ref(Array(6).fill(0n) as BIGINT_6)
@@ -39,6 +41,13 @@ const example: Ref<string> = ref('')
 
 const execResultPre: Ref<ExecResult | undefined> = ref()
 const execResultPost: Ref<ExecResult | undefined> = ref()
+
+const poweredBy = ref([
+  {
+    name: 'EthereumJS',
+    href: 'https://github.com/ethereumjs/ethereumjs-monorepo',
+  },
+])
 
 const router = useRouter()
 const route = useRoute()
@@ -163,7 +172,7 @@ async function onDataInputFormChange() {
  */
 async function values2Data() {
   for (let i = 0; i < hexVals.value.length; i++) {
-    if (isValidByteInputForm(hexVals.value[i]).length > 0) {
+    if (isValidByteInputForm(hexVals.value[i], lengthsMask.value[i]).length > 0) {
       return false
     }
   }
@@ -176,8 +185,7 @@ async function values2Data() {
     toHex(byteLengths.value[5], 32 * 2) +
     padHex(hexVals.value[3]) +
     padHex(hexVals.value[4]) +
-    padHex(hexVals.value[5]) +
-    hexVals.value[5]
+    padHex(hexVals.value[5])
 
   await run()
 }
@@ -216,11 +224,16 @@ await init()
 <template>
   <EIPC :title="eip.title" :eip="eip.num" :shareURL="shareURL">
     <template v-slot:description>
-      <b>How are ModExp gas costs changing with Fusaka?</b> EIP-7883 changes the gas calculation
-      algorithm. Especially interesting to explore are values around 32 bytes. Also take note of the
-      new base costs. A major use case in smart contracts is to verify RSA signatures, e.g. in the
-      context of airdrops. You can find a realistic RSA value setup in the examples. Also note that
-      this widget also respects the new ModExp value boundaries set with EIP-7823 (also Fusaka).
+      <p>
+        <b>How are ModExp gas costs changing with Fusaka?</b> EIP-7883 changes the gas calculation
+        algorithm of the ModExp precompile.
+      </p>
+      <p class="mt-4">
+        Especially interesting to explore are values around 32 bytes. Also take note of the new base
+        costs. A major use case in smart contracts is to verify RSA signatures, e.g. in the context
+        of airdrops. You can find a realistic RSA value setup in the examples. The widget also
+        respects the new ModExp value boundaries set with EIP-7823 (also Fusaka).
+      </p>
     </template>
     <template v-slot:content>
       <div>
@@ -263,6 +276,7 @@ await init()
           <PrecompileResultC v-model="execResultPre" title="Pre-Osaka" :left="true" />
           <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
         </div>
+        <PoweredByC :poweredBy="poweredBy" />
       </div>
     </template>
   </EIPC>

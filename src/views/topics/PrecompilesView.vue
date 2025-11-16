@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import EIP7883C from '@/components/eips/EIP7883C.vue'
 import EIP7951C from '@/components/eips/EIP7951C.vue'
 import DancerView from '../DancerView.vue'
 import TopicView from '../TopicView.vue'
@@ -8,11 +7,8 @@ import TopicView from '../TopicView.vue'
 <template>
   <TopicView>
     <suspense>
-      <EIP7883C />
-    </suspense>
-    <DancerView />
-    <Suspense>
       <EIP7951C />
-    </Suspense>
+    </suspense>
+    <DancerView nameId="precompiles" />
   </TopicView>
 </template>

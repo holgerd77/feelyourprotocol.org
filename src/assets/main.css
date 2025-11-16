@@ -7,3 +7,9 @@
   font-style: italic;
   font-display: swap;
 }
+
+.eip-precompile-c {
+  a {
+    @apply text-blue-900 underline;
+  }
+}

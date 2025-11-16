@@ -4,9 +4,15 @@ import { isValidByteInputForm } from '../lib/byteFormUtils'
 import TooltipC from '../ui/TooltipC.vue'
 const val = defineModel<string>()
 
-defineProps(['title', 'input', 'len', 'expectedLen', 'bigIntVal'])
+const props = defineProps<{
+  title: string
+  input: (event: Event) => void
+  len: bigint
+  expectedLen: bigint | undefined
+  bigIntVal: bigint | undefined
+}>()
 
-const errors = computed(() => isValidByteInputForm(val?.value ?? ''))
+const errors = computed(() => isValidByteInputForm(val?.value ?? '', props.expectedLen))
 
 const validation = computed(() => {
   return errors.value.length > 0 ? 'text-red-400' : 'text-slate-600'

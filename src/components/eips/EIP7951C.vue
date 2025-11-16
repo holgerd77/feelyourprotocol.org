@@ -2,18 +2,14 @@
 import { Hardfork } from '@ethereumjs/common'
 import { type ExecResult } from '@ethereumjs/evm'
 import { ref, type Ref } from 'vue'
-import {
-  dataToValueInput,
-  isValidByteInputForm,
-  padHex,
-  valueToDataInput,
-} from '../lib/byteFormUtils.js'
+import { dataToValueInput, isValidByteInputForm, valueToDataInput } from '../lib/byteFormUtils.js'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
 import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
 import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
 import PrecompileDataInput from '../precompiles/PrecompileDataInput.vue'
 import EIPC from './EIPC.vue'
+import PoweredByC from './PoweredByC.vue'
 import {
   runPrecompile,
   type BIGINT_5,
@@ -27,7 +23,7 @@ const eip = EIPs['eip-7951']
 
 const data: Ref<string> = ref('')
 const hexVals: Ref<HEX_5> = ref(Array(5).fill('') as HEX_5)
-const bigIntVals: Ref<BIGINT_5> = ref(Array(5).fill(0n) as BIGINT_5)
+const bigIntVals: Ref<BIGINT_UNDEFINED_5> = ref(Array(5).fill(undefined) as BIGINT_UNDEFINED_5)
 
 const lengthsMask: Ref<BIGINT_UNDEFINED_5> = ref([32n, 32n, 32n, 32n, 32n])
 const byteLengths: Ref<BIGINT_5> = ref(Array(5).fill(0n) as BIGINT_5)
@@ -37,6 +33,17 @@ const example: Ref<string> = ref('')
 const execResultPre: Ref<ExecResult | undefined> = ref()
 const execResultPost: Ref<ExecResult | undefined> = ref()
 
+const poweredBy = ref([
+  {
+    name: 'Noble Curves',
+    href: 'https://github.com/paulmillr/noble-curves',
+  },
+  {
+    name: 'EthereumJS',
+    href: 'https://github.com/ethereumjs/ethereumjs-monorepo',
+  },
+])
+
 const router = useRouter()
 const route = useRoute()
 
@@ -44,9 +51,55 @@ const route = useRoute()
  * Examples
  */
 const examples: Examples = {
-  simple: {
-    title: 'Simple',
-    values: ['03', '03', '02', '05', '03'],
+  valid: {
+    title: 'Valid ("Hello Fusaka!")',
+    values: [
+      '4dfb1eae8ed41e188b8a44a1109d982d01fc24bb85a933e6283e8838e46942fd',
+      'eb3dc5ce2902f162745057efb7a3308eba992c0d843623603516845ffccd3f10',
+      '3b91fedfb22f40063245c621036a040c159f02ae02e6d450ff9b53235e9232c4',
+      'bfa6d0a419b5bc625939cccb8db65a16f7c30c697928660e9da53eda031e80fa',
+      'db5998a893f9b8971a3892aecd132c0eca1bc9622e542f428d8129222f26bdc5',
+    ],
+  },
+  'invalid-sig-r': {
+    title: 'Invalid ("Hello Fusaka!"), modified sigR value',
+    values: [
+      '4dfb1eae8ed41e188b8a44a1109d982d01fc24bb85a933e6283e8838e46942fd',
+      'ee3dc5ce2902f162745057efb7a3308eba992c0d843623603516845ffccd3f10',
+      '3b91fedfb22f40063245c621036a040c159f02ae02e6d450ff9b53235e9232c4',
+      'bfa6d0a419b5bc625939cccb8db65a16f7c30c697928660e9da53eda031e80fa',
+      'db5998a893f9b8971a3892aecd132c0eca1bc9622e542f428d8129222f26bdc5',
+    ],
+  },
+  'invalid-sig-0': {
+    title: 'Invalid ("Hello Fusaka!"), sigR and sigS values 0',
+    values: [
+      '4dfb1eae8ed41e188b8a44a1109d982d01fc24bb85a933e6283e8838e46942fd',
+      '0000000000000000000000000000000000000000000000000000000000000000',
+      '0000000000000000000000000000000000000000000000000000000000000000',
+      'bfa6d0a419b5bc625939cccb8db65a16f7c30c697928660e9da53eda031e80fa',
+      'db5998a893f9b8971a3892aecd132c0eca1bc9622e542f428d8129222f26bdc5',
+    ],
+  },
+  'valid-wycheproof-special-case-hash': {
+    title: 'Valid (Wycheproof), special case hash',
+    values: [
+      '00000000690ed426ccf17803ebe2bd0884bcd58a1bb5e7477ead3645f356e7a9',
+      '16aea964a2f6506d6f78c81c91fc7e8bded7d397738448de1e19a0ec580bf266',
+      '252cd762130c6667cfe8b7bc47d27d78391e8e80c578d1cd38c3ff033be928e9',
+      '2927b10512bae3eddcfe467828128bad2903269919f7086069c8c4df6c732838',
+      'c7787964eaac00e5921fb1498a60f4606766b3d9685001558d1a974e7341513e',
+    ],
+  },
+  'invalid-wycheproof-r-too-large': {
+    title: 'Invalid (Wycheproof), r value too large',
+    values: [
+      '532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25',
+      'ffffffff00000001000000000000000000000000fffffffffffffffffffffffc',
+      'ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc63254e',
+      'd705d16f80987e2d9b1a6957d29ce22febf7d10fa515153182415c8361baaca4',
+      'b1fc105ee5ce80d514ec1238beae2037a6f83625593620d460819e8682160926',
+    ],
   },
 }
 
@@ -67,7 +120,11 @@ function shareURL() {
   const routeData = router.resolve({
     name: 'eip-7951',
     query: {
-      b: hexVals.value[3],
+      hash: hexVals.value[0],
+      sigr: hexVals.value[1],
+      sigs: hexVals.value[2],
+      pubx: hexVals.value[3],
+      puby: hexVals.value[4],
     },
   })
   window.open(routeData.href, '_blank')
@@ -117,14 +174,14 @@ async function onDataInputFormChange() {
  */
 async function values2Data() {
   for (let i = 0; i < hexVals.value.length; i++) {
-    if (!isValidByteInputForm(hexVals.value[i])) {
+    if (isValidByteInputForm(hexVals.value[i], lengthsMask.value[i]).length > 0) {
       return false
     }
   }
 
   valueToDataInput(hexVals, bigIntVals, lengthsMask, byteLengths)
 
-  data.value = padHex(hexVals.value[3]) + padHex(hexVals.value[4])
+  data.value = hexVals.value.join('')
 
   await run()
 }
@@ -143,13 +200,17 @@ async function onValueInputFormChange() {
 async function init() {
   if ('b' in route.query && 'e' in route.query && 'm' in route.query) {
     try {
-      hexVals.value[3] = route.query['b']!.toString()
+      hexVals.value[0] = route.query['hash']!.toString()
+      hexVals.value[1] = route.query['sigr']!.toString()
+      hexVals.value[2] = route.query['sigs']!.toString()
+      hexVals.value[3] = route.query['pubx']!.toString()
+      hexVals.value[4] = route.query['puby']!.toString()
       await values2Data()
     } catch {
       console.log('Invalid parameter call!')
     }
   } else {
-    example.value = 'simple'
+    example.value = 'valid'
     await selectExample()
   }
 }
@@ -160,11 +221,39 @@ await init()
 <template>
   <EIPC :title="eip.title" :eip="eip.num" :shareURL="shareURL">
     <template v-slot:description>
-      <b>How are ModExp gas costs changing with Fusaka?</b> EIP-7883 changes the gas calculation
-      algorithm. Especially interesting to explore are values around 32 bytes. Also take note of the
-      new base costs. A major use case in smart contracts is to verify RSA signatures, e.g. in the
-      context of airdrops. You can find a realistic RSA value setup in the examples. Also note that
-      this widget also respects the new ModExp value boundaries set with EIP-7823 (also Fusaka).
+      <p>
+        <b>How can I interact with the new curve precompile?</b>
+        The
+        <a href="https://www.nervos.org/knowledge-base/what_is_secp256r1" target="_blank"
+          >secp256r1</a
+        >
+        (also know as P-256) precompile improves Ethereum's UX by allowing efficient
+        in-contract-signature verification (e.g. for multisig wallets) from
+        <a href="https://developer.apple.com/documentation/cryptokit/p256" target="_blank">Apple</a>
+        and
+        <a href="https://developer.android.com/privacy-and-security/keystore" target="_blank"
+          >Android</a
+        >
+        devices as well as
+        <a href="https://webauthn.io/" target="_blank">FIDO2/WebAuthn</a> supporting browsers.
+      </p>
+      <p class="mt-4">
+        The interface below lets you explore how to directly interact with the precompile (at
+        address <code>0x100</code>). You can use libraries like
+        <a
+          href="https://github.com/paulmillr/noble-curves?tab=readme-ov-file#secp256k1-p256-p384-p521-ed25519-ed448-brainpool"
+          target="_blank"
+          >Noble Curves</a
+        >
+        to generate a valid signature to test - see
+        <a
+          href="https://github.com/ethereumjs/ethereumjs-monorepo/tree/master/packages/evm#eip-7951-precompile-for-secp256r1-curve-support-osaka"
+          target="_blank"
+          >here</a
+        >
+        for example code - or use one of the examples provided. The precompile will return
+        <code>0x01</code> (as 32-bytes) if the signature is valid.
+      </p>
     </template>
     <template v-slot:content>
       <div>
@@ -177,24 +266,21 @@ await init()
         </p>
 
         <PrecompileValueInput
-          v-model="hexVals[3]"
-          title="B"
+          v-for="(title, index) in ['Hash', 'SigR', 'SigS', 'PubX', 'PubY']"
+          :key="index"
+          v-model="hexVals[index]"
+          :title="title"
           :input="onValueInputFormChange"
-          :len="byteLengths[3]"
-          :bigIntVal="bigIntVals[3]"
-        />
-        <PrecompileValueInput
-          v-model="hexVals[4]"
-          title="E"
-          :input="onValueInputFormChange"
-          :len="byteLengths[4]"
-          :bigIntVal="bigIntVals[4]"
+          :len="byteLengths[index]"
+          :expectedLen="lengthsMask[index]"
+          :bigIntVal="bigIntVals[index]"
         />
 
         <div class="grid grid-cols-2 gap-1 mt-2.5">
           <PrecompileResultC v-model="execResultPre" title="Pre-Osaka" :left="true" />
           <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
         </div>
+        <PoweredByC :poweredBy="poweredBy" />
       </div>
     </template>
   </EIPC>
