@@ -17,7 +17,7 @@ const eip: EIP = EIPs[route.name]
     </p>
   </div>
 
-  <div class="grid md:grid-cols-2">
+  <div class="grid md:grid-cols-2 gap-4">
     <Suspense>
       <slot></slot>
     </Suspense>
