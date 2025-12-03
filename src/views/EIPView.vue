@@ -10,9 +10,22 @@ const eip: EIP = EIPs[route.name]
 <template>
   <div class="grid grid-cols-1">
     <p class="flex justify-end text-sm items-center mb-3">
-      <span class=""
-        >{{ TOPICS[eip.topicId].title }} &nbsp;| &nbsp;{{ HARDFORKS[eip.hardforkId].title }}</span
-      >
+      <span class="">
+        {{ eip.topicId !== undefined && TOPICS[eip.topicId] ? TOPICS[eip.topicId].title : '' }}
+        {{
+          eip.topicId !== undefined &&
+          TOPICS[eip.topicId] &&
+          eip.hardforkId !== undefined &&
+          HARDFORKS[eip.hardforkId]
+            ? ' &nbsp;| &nbsp; '
+            : ''
+        }}
+        {{
+          eip.hardforkId !== undefined && HARDFORKS[eip.hardforkId]
+            ? HARDFORKS[eip.hardforkId].title
+            : ''
+        }}
+      </span>
       <span class="ml-5 text-3xl">EIP-{{ eip.num }}</span>
     </p>
   </div>
