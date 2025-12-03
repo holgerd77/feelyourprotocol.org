@@ -14,18 +14,18 @@ import {
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
 import { useRoute, useRouter } from 'vue-router'
 import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
-import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
-import PrecompileDataInput from '../precompiles/PrecompileDataInput.vue'
+import ExamplesC from '../ui/ExamplesC.vue'
+import HexDataInputC from '../ui/HexDataInputC.vue'
 import EIPC from './EIPC.vue'
 import PoweredByC from './PoweredByC.vue'
 import {
   runPrecompile,
   type BIGINT_6,
   type BIGINT_UNDEFINED_6,
-  type Examples,
   type HEX_6,
 } from '../lib/precompiles.js'
 import { EIPs } from '@/views/lib/structure.js'
+import { type Examples } from '../lib/general.js'
 
 const eip = EIPs['eip-7883']
 
@@ -237,13 +237,8 @@ await init()
     </template>
     <template v-slot:content>
       <div>
-        <p class="text-right">
-          <PrecompileExamplesC v-model="example" :examples="examples" :change="selectExample" />
-        </p>
-
-        <p>
-          <PrecompileDataInput v-model="data" rows="6" :formChange="onDataInputFormChange" />
-        </p>
+        <ExamplesC v-model="example" :examples="examples" :change="selectExample" />
+        <HexDataInputC v-model="data" rows="6" :formChange="onDataInputFormChange" />
 
         <PrecompileValueInput
           v-model="hexVals[3]"

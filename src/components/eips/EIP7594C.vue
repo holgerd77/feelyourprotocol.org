@@ -1,12 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
+import HexDataInputC from '../ui/HexDataInputC.vue'
+import { type Examples } from '../lib/general.js'
+import blob1 from '../lib/blobs/blob1.txt?raw'
 import EIPC from './EIPC.vue'
 import { EIPs } from '@/views/lib/structure.js'
 import PoweredByC from './PoweredByC.vue'
+import ExamplesC from '../ui/ExamplesC.vue'
+
+const data: Ref<string> = ref('')
+const example: Ref<string> = ref('')
 
 const eip = EIPs['eip-7594']
+
 const router = useRouter()
+
+/**
+ * Examples
+ */
+const examples: Examples = {
+  blob1: {
+    title: 'Blob 1',
+    values: [blob1],
+  },
+}
+
 const poweredBy = ref([
   {
     name: 'Ethers',
@@ -22,12 +41,40 @@ const poweredBy = ref([
   },
 ])
 
+/**
+ * Example/URL helper functions
+ */
+const selectExample = async () => {
+  if (example.value === '') {
+    return
+  }
+  data.value = examples[example.value]!.values[0]
+}
+
 function shareURL() {
   const routeData = router.resolve({
     name: 'eip-7594',
   })
   window.open(routeData.href, '_blank')
 }
+
+/**
+ * The data form values changed.
+ */
+async function onDataInputFormChange() {
+  example.value = ''
+  //await data2Values()
+}
+
+/**
+ * Initialize the widget either with URL parameters or with a default example.
+ */
+async function init() {
+  example.value = 'blob1'
+  await selectExample()
+}
+
+await init()
 </script>
 
 <template>
@@ -57,6 +104,8 @@ function shareURL() {
     </template>
     <template v-slot:content>
       <div>
+        <ExamplesC v-model="example" :examples="examples" :change="selectExample" />
+        <HexDataInputC v-model="data" rows="6" :formChange="onDataInputFormChange" />
         <PoweredByC :poweredBy="poweredBy" />
       </div>
     </template>
