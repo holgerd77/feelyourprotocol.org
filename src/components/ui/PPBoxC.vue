@@ -9,7 +9,9 @@ defineProps<{
 
 <template>
   <div :class="[PP_BOX, left ? 'text-left pre-hardfork' : 'text-right post-hardfork']">
-    <span :class="PP_BOX_TITLE">{{ title }}</span>
+    <div class="mb-2.5">
+      <span :class="PP_BOX_TITLE">{{ title }}</span>
+    </div>
     <slot />
   </div>
 </template>

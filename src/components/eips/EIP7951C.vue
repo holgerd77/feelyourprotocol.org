@@ -18,6 +18,7 @@ import {
 } from '../lib/precompiles.js'
 import { EIPs } from '@/views/lib/structure.js'
 import { type Examples } from '../lib/general.js'
+import { PP_BOX_LAYOUT } from '../lib/layout'
 
 const eip = EIPs['eip-7951']
 
@@ -271,7 +272,7 @@ await init()
           :bigIntVal="bigIntVals[index]"
         />
 
-        <div class="grid grid-cols-2 gap-1 mt-2.5">
+        <div :class="PP_BOX_LAYOUT">
           <PrecompileResultC v-model="execResultPre" title="Pre-Osaka" :left="true" />
           <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
         </div>

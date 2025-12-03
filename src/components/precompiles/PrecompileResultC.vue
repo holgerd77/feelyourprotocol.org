@@ -15,6 +15,6 @@ defineProps(['title', 'left'])
     <p v-if="execResult" :class="PP_BOX_TEXT_SMALL">
       Result: {{ execResult ? bytesToHex(execResult.returnValue) : '' }}
     </p>
-    <p v-else :class="PP_BOX_TEXT_MIDDLE">Not available</p>
+    <p v-else :class="PP_BOX_TEXT_MIDDLE" class="mt-5">Not available</p>
   </PPBoxC>
 </template>

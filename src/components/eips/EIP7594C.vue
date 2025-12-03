@@ -8,6 +8,8 @@ import EIPC from './EIPC.vue'
 import { EIPs } from '@/views/lib/structure.js'
 import PoweredByC from './PoweredByC.vue'
 import ExamplesC from '../ui/ExamplesC.vue'
+import { PP_BOX_LAYOUT, PP_BOX_TEXT_SMALL } from '../lib/layout'
+import PPBoxC from '../ui/PPBoxC.vue'
 
 const data: Ref<string> = ref('')
 const example: Ref<string> = ref('')
@@ -106,6 +108,15 @@ await init()
       <div>
         <ExamplesC v-model="example" :examples="examples" :change="selectExample" />
         <HexDataInputC v-model="data" rows="6" :formChange="onDataInputFormChange" />
+
+        <div :class="PP_BOX_LAYOUT">
+          <PPBoxC title="EIP-4844 | 1 Blob Proof" :left="true">
+            <p :class="PP_BOX_TEXT_SMALL"></p>
+          </PPBoxC>
+          <PPBoxC title="EIP-7594 | 128 Cell Proofs" :left="false">
+            <p :class="PP_BOX_TEXT_SMALL"></p>
+          </PPBoxC>
+        </div>
         <PoweredByC :poweredBy="poweredBy" />
       </div>
     </template>
