@@ -2,22 +2,23 @@
 import { Hardfork } from '@ethereumjs/common'
 import { type ExecResult } from '@ethereumjs/evm'
 import { ref, type Ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { dataToValueInput, isValidByteInputForm, valueToDataInput } from '../lib/byteFormUtils.js'
 import PrecompileValueInput from '../precompiles/PrecompileValueInput.vue'
-import { useRoute, useRouter } from 'vue-router'
 import PrecompileResultC from '../precompiles/PrecompileResultC.vue'
-import PrecompileExamplesC from '../precompiles/PrecompileExamplesC.vue'
-import PrecompileDataInput from '../precompiles/PrecompileDataInput.vue'
+import ExamplesC from '../ui/ExamplesC.vue'
+import HexDataInputC from '../ui/HexDataInputC.vue'
 import EIPC from './EIPC.vue'
 import PoweredByC from './PoweredByC.vue'
 import {
   runPrecompile,
   type BIGINT_5,
   type BIGINT_UNDEFINED_5,
-  type Examples,
   type HEX_5,
 } from '../lib/precompiles.js'
 import { EIPs } from '@/views/lib/structure.js'
+import { type Examples } from '../lib/general.js'
+import { PP_BOX_LAYOUT } from '../lib/layout'
 
 const eip = EIPs['eip-7951']
 
@@ -257,13 +258,8 @@ await init()
     </template>
     <template v-slot:content>
       <div>
-        <p class="text-right">
-          <PrecompileExamplesC v-model="example" :examples="examples" :change="selectExample" />
-        </p>
-
-        <p>
-          <PrecompileDataInput v-model="data" rows="6" :formChange="onDataInputFormChange" />
-        </p>
+        <ExamplesC v-model="example" :examples="examples" :change="selectExample" />
+        <HexDataInputC v-model="data" rows="6" :formChange="onDataInputFormChange" />
 
         <PrecompileValueInput
           v-for="(title, index) in ['Hash', 'SigR', 'SigS', 'PubX', 'PubY']"
@@ -276,7 +272,7 @@ await init()
           :bigIntVal="bigIntVals[index]"
         />
 
-        <div class="grid grid-cols-2 gap-1 mt-2.5">
+        <div :class="PP_BOX_LAYOUT">
           <PrecompileResultC v-model="execResultPre" title="Pre-Osaka" :left="true" />
           <PrecompileResultC v-model="execResultPost" title="Post-Osaka" :left="false" />
         </div>

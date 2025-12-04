@@ -13,13 +13,6 @@ export type HEX_6 = [string, string, string, string, string, string]
 export type BIGINT_6 = [bigint, bigint, bigint, bigint, bigint, bigint]
 export type BIGINT_UNDEFINED_6 = [BU, BU, BU, BU, BU, BU]
 
-export interface Examples {
-  [key: string]: {
-    title: string
-    values: string[]
-  }
-}
-
 export async function runPrecompile(
   data: string,
   preHF: Hardfork,
