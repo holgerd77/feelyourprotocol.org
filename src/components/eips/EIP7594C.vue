@@ -8,10 +8,30 @@ import EIPC from './EIPC.vue'
 import { EIPs } from '@/views/lib/structure.js'
 import PoweredByC from './PoweredByC.vue'
 import ExamplesC from '../ui/ExamplesC.vue'
-import { PP_BOX_LAYOUT, PP_BOX_TEXT_SMALL } from '../lib/layout'
+import {
+  PP_BOX_LAYOUT,
+  PP_BOX_TEXT_SMALL,
+  PP_BOX_LAYOUT_SINGLE,
+  PP_BOX_TABLE_TD,
+} from '../lib/layout'
 import PPBoxC from '../ui/PPBoxC.vue'
+import { trustedSetup } from '@paulmillr/trusted-setups/fast-peerdas.js'
+import { KZG as microEthKZG } from 'micro-eth-signer/kzg.js'
+import {
+  blobsToCellProofs,
+  blobsToProofs,
+  computeVersionedHash,
+  type PrefixedHexString,
+} from '@ethereumjs/util'
+
+const kzg = new microEthKZG(trustedSetup)
 
 const data: Ref<string> = ref('')
+const commitment: Ref<string> = ref('')
+const versionedHash: Ref<string> = ref('')
+const blobProof: Ref<string> = ref('')
+const cellProofs: Ref<string[]> = ref([''])
+
 const example: Ref<string> = ref('')
 
 const eip = EIPs['eip-7594']
@@ -65,15 +85,34 @@ function shareURL() {
  */
 async function onDataInputFormChange() {
   example.value = ''
-  //await data2Values()
+  await run()
 }
 
+async function run() {
+  try {
+    commitment.value = kzg.blobToKzgCommitment(data.value)
+    const blobCommitmentVersion = 0x01
+    versionedHash.value = computeVersionedHash(
+      commitment.value as PrefixedHexString,
+      blobCommitmentVersion,
+    )
+    blobProof.value = blobsToProofs(
+      kzg,
+      [`0x${data.value}`],
+      [commitment.value as PrefixedHexString],
+    )![0]
+    cellProofs.value = blobsToCellProofs(kzg, [`0x${data.value}`])
+  } catch (error) {
+    console.error(error)
+  }
+}
 /**
  * Initialize the widget either with URL parameters or with a default example.
  */
 async function init() {
   example.value = 'blob1'
   await selectExample()
+  await run()
 }
 
 await init()
@@ -109,12 +148,35 @@ await init()
         <ExamplesC v-model="example" :examples="examples" :change="selectExample" />
         <HexDataInputC v-model="data" rows="6" :formChange="onDataInputFormChange" />
 
+        <div :class="PP_BOX_LAYOUT_SINGLE">
+          <PPBoxC title="EIP-4844 + EIP-7594" :left="true">
+            <table :class="PP_BOX_TEXT_SMALL">
+              <tr>
+                <td :class="PP_BOX_TABLE_TD">Commitment</td>
+                <td :class="[PP_BOX_TABLE_TD, 'break-all']">{{ commitment }}</td>
+              </tr>
+              <tr>
+                <td :class="PP_BOX_TABLE_TD">Versioned Hash</td>
+                <td :class="[PP_BOX_TABLE_TD, 'break-all']">{{ versionedHash }}</td>
+              </tr>
+            </table>
+          </PPBoxC>
+        </div>
         <div :class="PP_BOX_LAYOUT">
           <PPBoxC title="EIP-4844 | 1 Blob Proof" :left="true">
-            <p :class="PP_BOX_TEXT_SMALL"></p>
+            <p :class="PP_BOX_TEXT_SMALL">
+              {{ blobProof }}
+            </p>
           </PPBoxC>
           <PPBoxC title="EIP-7594 | 128 Cell Proofs" :left="false">
-            <p :class="PP_BOX_TEXT_SMALL"></p>
+            <p
+              v-for="(value, index) in cellProofs.slice(0, 4)"
+              :class="PP_BOX_TEXT_SMALL"
+              :key="index"
+            >
+              {{ value }}
+            </p>
+            <p v-if="cellProofs.length > 4" :class="PP_BOX_TEXT_SMALL">...</p>
           </PPBoxC>
         </div>
         <PoweredByC :poweredBy="poweredBy" />
