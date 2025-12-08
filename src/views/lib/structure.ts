@@ -33,12 +33,12 @@ export const HARDFORKS: Hardforks = {
 
 // Attention! The title is used for routing!
 export const TOPICS: Topics = {
-  precompiles: {
+  /*precompiles: {
     title: 'Precompiles',
     path: '/precompiles',
     url: 'https://rareskills.io/post/solidity-precompiles',
     eips: getTopicEIPs('precompiles'),
-  },
+  },*/
 }
 
 export interface EIP {
@@ -82,7 +82,7 @@ function getHardforkEIPs(hardforkId: string) {
   return eips
 }
 
-function getTopicEIPs(topicId: string) {
+/*function getTopicEIPs(topicId: string) {
   const eips: number[] = []
   for (const [, eip] of Object.entries(EIPs)) {
     if (eip.topicId === topicId) {
@@ -90,4 +90,4 @@ function getTopicEIPs(topicId: string) {
     }
   }
   return eips
-}
+}*/

@@ -3,6 +3,8 @@ import { ref, type Ref } from 'vue'
 import HexDataInputC from '../ui/HexDataInputC.vue'
 import { type Examples } from '../lib/general.js'
 import blobBase from '../lib/blobs/blob_base.txt?raw'
+import blobGnosis from '../lib/blobs/blob_gnosis.txt?raw'
+import blobLighter from '../lib/blobs/blob_lighter.txt?raw'
 import EIPC from './EIPC.vue'
 import { EIPs } from '@/views/lib/structure.js'
 import PoweredByC from './PoweredByC.vue'
@@ -46,6 +48,14 @@ const examples: Examples = {
   blob1: {
     title: 'Base L2 Blob | Hash: 0x01ae971... | Block Nr: 23966811 | 2025-12-08',
     values: [blobBase],
+  },
+  blob2: {
+    title: 'Lighter L2 Blob | Hash: 0x015ed6b... | Block Nr: 23967328 | 2025-12-08',
+    values: [blobLighter],
+  },
+  blob3: {
+    title: 'Gnosis Chain Blob | Hash: 0x01755da... | Block Nr: 43511951 | 2025-12-06',
+    values: [blobGnosis],
   },
 }
 

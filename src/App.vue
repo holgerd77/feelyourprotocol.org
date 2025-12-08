@@ -32,8 +32,6 @@ const navigate = () => {
         </RouterLink>
       </h1>
       <nav class="font-mono text-sm text-right flex justify-end items-center">
-        <RouterLink to="/precompiles" class="ml-5">Precompiles</RouterLink>
-
         <RouterLink to="/fusaka" class="ml-5">Fusaka</RouterLink>
 
         <select
