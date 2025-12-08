@@ -1,4 +1,11 @@
 export const EIPs: EIPs = {
+  'eip-7594': {
+    num: 7594,
+    path: '/eip-7594-peerdas-data-availability-sampling',
+    title: 'Peer Data Availability Sampling',
+    hardforkId: 'fusaka',
+    topicId: 'scaling',
+  },
   /*'eip-7883': {
     num: 7883,
     path: '/eip-7883-modexp-gas-cost-increase',
@@ -11,7 +18,6 @@ export const EIPs: EIPs = {
     path: '/eip-7951-secp256r1-precompile',
     title: 'secp256r1 Precompile Support',
     hardforkId: 'fusaka',
-    topicId: 'precompiles',
   },
 }
 
@@ -27,20 +33,20 @@ export const HARDFORKS: Hardforks = {
 
 // Attention! The title is used for routing!
 export const TOPICS: Topics = {
-  precompiles: {
+  /*precompiles: {
     title: 'Precompiles',
     path: '/precompiles',
     url: 'https://rareskills.io/post/solidity-precompiles',
     eips: getTopicEIPs('precompiles'),
-  },
+  },*/
 }
 
 export interface EIP {
   num: number
   path: string
   title: string
-  hardforkId: string
-  topicId: string
+  hardforkId?: string
+  topicId?: string
 }
 export interface EIPs {
   [key: string]: EIP
@@ -76,7 +82,7 @@ function getHardforkEIPs(hardforkId: string) {
   return eips
 }
 
-function getTopicEIPs(topicId: string) {
+/*function getTopicEIPs(topicId: string) {
   const eips: number[] = []
   for (const [, eip] of Object.entries(EIPs)) {
     if (eip.topicId === topicId) {
@@ -84,4 +90,4 @@ function getTopicEIPs(topicId: string) {
     }
   }
   return eips
-}
+}*/
