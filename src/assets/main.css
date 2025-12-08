@@ -13,3 +13,9 @@
     @apply text-blue-900 underline;
   }
 }
+
+.pp-box {
+  a {
+    @apply text-white underline;
+  }
+}

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
-import { useRouter } from 'vue-router'
 import HexDataInputC from '../ui/HexDataInputC.vue'
 import { type Examples } from '../lib/general.js'
-import blob1 from '../lib/blobs/blob1.txt?raw'
+import blobBase from '../lib/blobs/blob_base.txt?raw'
 import EIPC from './EIPC.vue'
 import { EIPs } from '@/views/lib/structure.js'
 import PoweredByC from './PoweredByC.vue'
@@ -23,6 +22,9 @@ import {
   computeVersionedHash,
   type PrefixedHexString,
 } from '@ethereumjs/util'
+import ActionButtonC from '../ui/ActionButtonC.vue'
+import PPBoxInfoText from '../ui/PPBoxInfoText.vue'
+import PPBoxErrorText from '../ui/PPBoxErrorText.vue'
 
 const kzg = new microEthKZG(trustedSetup)
 
@@ -32,19 +34,18 @@ const versionedHash: Ref<string> = ref('')
 const blobProof: Ref<string> = ref('')
 const cellProofs: Ref<string[]> = ref([''])
 
+const errorMsg: Ref<string> = ref('')
 const example: Ref<string> = ref('')
 
 const eip = EIPs['eip-7594']
-
-const router = useRouter()
 
 /**
  * Examples
  */
 const examples: Examples = {
   blob1: {
-    title: 'Blob 1',
-    values: [blob1],
+    title: 'Base L2 Blob | Hash: 0x01ae971... | Block Nr: 23966811 | 2025-12-08',
+    values: [blobBase],
   },
 }
 
@@ -71,13 +72,11 @@ const selectExample = async () => {
     return
   }
   data.value = examples[example.value]!.values[0]
-}
+  commitment.value = ''
+  blobProof.value = ''
+  cellProofs.value = ['']
 
-function shareURL() {
-  const routeData = router.resolve({
-    name: 'eip-7594',
-  })
-  window.open(routeData.href, '_blank')
+  errorMsg.value = ''
 }
 
 /**
@@ -85,7 +84,11 @@ function shareURL() {
  */
 async function onDataInputFormChange() {
   example.value = ''
-  await run()
+  errorMsg.value = ''
+
+  commitment.value = ''
+  blobProof.value = ''
+  cellProofs.value = ['']
 }
 
 async function run() {
@@ -103,7 +106,7 @@ async function run() {
     )![0]
     cellProofs.value = blobsToCellProofs(kzg, [`0x${data.value}`])
   } catch (error) {
-    console.error(error)
+    errorMsg.value = error instanceof Error ? error.message : String(error)
   }
 }
 /**
@@ -112,22 +115,21 @@ async function run() {
 async function init() {
   example.value = 'blob1'
   await selectExample()
-  await run()
+  //await run()
 }
 
 await init()
 </script>
 
 <template>
-  <EIPC :title="eip.title" :eip="eip.num" :shareURL="shareURL">
+  <EIPC :title="eip.title" :eip="eip.num">
     <template v-slot:description>
       <p>
         <b>How do blob transactions change with PeerDAS?</b>
         Data availability sampling (DAS) - introduced along the Fusaka hardfork - comes with a new
-        proof format for blobs, dividing the previous per-blob proofs into several cell proofs per
-        blob. The network wrapper gets a new version 1 and the EIP-4844 blob transaction
-        serialization format changes when submitting a blob transaction to the network. Libraries
-        like
+        proof format for blobs, dividing the previous per-blob proofs into 128 cell proofs per blob.
+        The network wrapper gets a new version 1 and the EIP-4844 blob transaction serialization
+        format changes when submitting a blob transaction to the network. Libraries like
         <a href="https://github.com/ethers-io/ethers.js/issues/5062" target="_blank">Ethers</a>
         or
         <a
@@ -136,10 +138,21 @@ await init()
           >EthereumJS</a
         >
         give some illustration.
-        <br />
-        <br />
-        Below you can check if the values for versioned hashes, commitments and proofs match with
-        your local values or values from blob explorers like
+        <br /><br />
+        <span class="float-right ml-5 mb-2 mt-3">
+          <ActionButtonC
+            tooltip="This is a bit slow (> 10 seconds)"
+            text="COMMIT/PROOF/RUN"
+            :onClick="run"
+          />
+        </span>
+        Below you can check if the values for versioned hashes, commitments and proofs (computed
+        using Noble
+        <a
+          href="https://github.com/paulmillr/micro-eth-signer?tab=readme-ov-file#kzg--peerdas"
+          target="_blank"
+          >micro-eth-signer</a
+        >) match with your local values or values from blob explorers like
         <a href="https://blobscan.org/" target="_blank">Blobscan</a>.
       </p>
     </template>
@@ -150,33 +163,50 @@ await init()
 
         <div :class="PP_BOX_LAYOUT_SINGLE">
           <PPBoxC title="EIP-4844 + EIP-7594" :left="true">
-            <table :class="PP_BOX_TEXT_SMALL">
+            <table v-if="commitment !== ''" :class="PP_BOX_TEXT_SMALL">
               <tr>
                 <td :class="PP_BOX_TABLE_TD">Commitment</td>
                 <td :class="[PP_BOX_TABLE_TD, 'break-all']">{{ commitment }}</td>
               </tr>
               <tr>
                 <td :class="PP_BOX_TABLE_TD">Versioned Hash</td>
-                <td :class="[PP_BOX_TABLE_TD, 'break-all']">{{ versionedHash }}</td>
+                <td :class="[PP_BOX_TABLE_TD, 'break-all']">
+                  {{ versionedHash }}
+                  (<a :href="`https://blobscan.com/blob/${versionedHash}`" target="_blank"
+                    >Blobscan</a
+                  >)
+                </td>
+              </tr>
+              <tr>
+                <td :class="PP_BOX_TABLE_TD">Blob Length</td>
+                <td :class="[PP_BOX_TABLE_TD, 'break-all']">{{ data.length }}</td>
               </tr>
             </table>
+            <div v-else>
+              <PPBoxErrorText v-if="errorMsg !== ''" :text="errorMsg" />
+              <PPBoxInfoText v-else text="Press button to compute..." />
+            </div>
           </PPBoxC>
         </div>
         <div :class="PP_BOX_LAYOUT">
           <PPBoxC title="EIP-4844 | 1 Blob Proof" :left="true">
-            <p :class="PP_BOX_TEXT_SMALL">
+            <p v-if="commitment != ''" :class="PP_BOX_TEXT_SMALL">
               {{ blobProof }}
             </p>
+            <PPBoxInfoText v-else text="Same here." />
           </PPBoxC>
           <PPBoxC title="EIP-7594 | 128 Cell Proofs" :left="false">
-            <p
-              v-for="(value, index) in cellProofs.slice(0, 4)"
-              :class="PP_BOX_TEXT_SMALL"
-              :key="index"
-            >
-              {{ value }}
-            </p>
-            <p v-if="cellProofs.length > 4" :class="PP_BOX_TEXT_SMALL">...</p>
+            <div v-if="commitment != ''">
+              <p
+                v-for="(value, index) in cellProofs.slice(0, 4)"
+                :class="PP_BOX_TEXT_SMALL"
+                :key="index"
+              >
+                {{ value }}
+              </p>
+              <p v-if="cellProofs.length > 4" :class="PP_BOX_TEXT_SMALL">...</p>
+            </div>
+            <PPBoxInfoText v-else text="Same here." />
           </PPBoxC>
         </div>
         <PoweredByC :poweredBy="poweredBy" />

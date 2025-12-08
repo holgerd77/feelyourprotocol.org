@@ -2,7 +2,11 @@
 import { ArrowTopRightOnSquareIcon, ShareIcon } from '@heroicons/vue/24/solid'
 import ButtonC from '../ui/ButtonC.vue'
 
-defineProps(['title', 'eip', 'shareURL'])
+defineProps<{
+  title: string
+  eip: number
+  shareURL?: () => void
+}>()
 </script>
 
 <template>
@@ -13,7 +17,7 @@ defineProps(['title', 'eip', 'shareURL'])
     <div class="grid grid-cols-2 mb-3">
       <h3 class="font-bold text-xl text-blue-900">{{ title }}</h3>
       <div class="flex justify-end items-baseline">
-        <a href="#" @click.prevent="shareURL" class="share-url-button mr-1.5">
+        <a v-if="shareURL" href="#" @click.prevent="shareURL" class="share-url-button mr-1.5">
           <ButtonC :icon="ShareIcon" tooltip="Open Shareable URL" />
         </a>
         <a

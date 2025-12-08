@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <div :class="[PP_BOX, left ? 'text-left pre-hardfork' : 'text-right post-hardfork']">
+  <div :class="[PP_BOX, left ? 'text-left pre-hardfork' : 'text-right post-hardfork', 'pp-box']">
     <div class="mb-2.5">
       <span :class="PP_BOX_TITLE">{{ title }}</span>
     </div>
