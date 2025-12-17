@@ -154,6 +154,7 @@ await init()
             tooltip="This is a bit slow (> 10 seconds)"
             text="COMMIT/PROOF/RUN"
             :onClick="run"
+            class="run-button"
           />
         </span>
         Below you can check if the values for versioned hashes, commitments and proofs (computed
@@ -172,7 +173,7 @@ await init()
         <HexDataInputC v-model="data" rows="6" :formChange="onDataInputFormChange" />
 
         <div :class="PP_BOX_LAYOUT_SINGLE">
-          <PPBoxC title="EIP-4844 + EIP-7594" :left="true">
+          <PPBoxC title="EIP-4844 + EIP-7594" :left="true" class="4844-7594-box">
             <table v-if="commitment !== ''" :class="PP_BOX_TEXT_SMALL">
               <tr>
                 <td :class="PP_BOX_TABLE_TD">Commitment</td>
@@ -199,13 +200,13 @@ await init()
           </PPBoxC>
         </div>
         <div :class="PP_BOX_LAYOUT">
-          <PPBoxC title="EIP-4844 | 1 Blob Proof" :left="true">
+          <PPBoxC title="EIP-4844 | 1 Blob Proof" :left="true" class="4844-box">
             <p v-if="commitment != ''" :class="PP_BOX_TEXT_SMALL">
               {{ blobProof }}
             </p>
             <PPBoxInfoText v-else text="Same here." />
           </PPBoxC>
-          <PPBoxC title="EIP-7594 | 128 Cell Proofs" :left="false">
+          <PPBoxC title="EIP-7594 | 128 Cell Proofs" :left="false" class="7594-box">
             <div v-if="commitment != ''">
               <p
                 v-for="(value, index) in cellProofs.slice(0, 4)"
